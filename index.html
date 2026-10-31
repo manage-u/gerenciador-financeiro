@@ -347,8 +347,10 @@ html[data-ui="lime"] #fab{background:#0b0b0b;color:var(--fe)}html[data-ui="mono"
 
 /* ===== v11 ===== */
 .eye{width:38px;height:38px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--bg);color:var(--ink);box-shadow:var(--raise-s);cursor:pointer;padding:0}.eye svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-html.priv main :is(b,.rt,.big,.mv span,.hj b,.tl em,.dt1,.dl b,.tag,.hr b,.evt,.imr b,.rpk b,input[type=number],.sv input,.cr b,small b){filter:blur(7px);transition:filter .15s;user-select:none}
-html.priv main :is(b,.rt,.big,.hj b,.hr b,input[type=number]):hover{filter:none}
+html.priv main :is(b,.rt,.big,.mv span,.hj b,.tl em,.dt1,.dl b,.tag,.hr b,.evt,.imr b,.rpk b,input[type=number],.sv input,.cr b,small b){filter:blur(10px);filter:blur(max(.5em,8px));transition:filter .15s;user-select:none}
+html.priv main :is(b,.rt,.big,.hj b,.hr b,input[type=number]):active{filter:none}
+html.priv .pvm{display:inline-block;filter:blur(10px);filter:blur(max(.5em,8px));user-select:none}html.priv .pvm:active{filter:none}html.priv svg .pvm{display:inline;filter:none;opacity:0}
+html.priv main .crumb b,html.priv main .tag{filter:none}
 .hj{margin:0 0 14px;padding:10px 14px;border-radius:var(--r3);background:rgba(127,127,127,.16);font-size:14px}.hj b{font-size:19px;letter-spacing:-.02em;margin:0 4px}.hj small{display:block;font-size:12px;opacity:.75;margin-top:2px;text-transform:none;letter-spacing:0}
 .card>h2,.card>.ch>h2{display:flex;align-items:center;gap:10px}.card>h2::before,.card>.ch>h2::before{content:"";width:4px;height:16px;border-radius:4px;background:var(--fe);flex:none}
 html[data-ui="lime"] .card>h2::before,html[data-ui="lime"] .card>.ch>h2::before{background:var(--ink)}
@@ -371,7 +373,6 @@ html[data-ui="lime"] .hd,html[data-ui="mono"] .hd,html[data-ui="noir"] .hd{backg
 .dvr{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:10px 0}
 .dvr .fld{flex:none}
 .inv .note{margin:6px 0 0}
-@media(hover:none){html.priv main :is(b,.rt,.big,.hj b,.hr b,input[type=number]):active{filter:none}}
 @media(max-width:760px){
  html nav.side{left:0;right:0;bottom:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-radius:20px 20px 0 0}
  #nv{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;overflow:visible}
@@ -423,7 +424,7 @@ const CC=['#2f6690','#1d6b57','#c58b2a','#a65a8a','#c4553d','#5a6fb0','#7a8f3a',
 const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],WD=['dom','seg','ter','qua','qui','sex','sáb'];
 const MESL=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const RT={salario:'Salário',vale:'Vale-alimentação',bonus:'Bônus',outro:'Outras entradas'};
-const K='gf-azim-v1',VER='0.12';
+const K='gf-azim-v1',VER='0.13';
 const DT=[['cheque','Cheque especial'],['rotativo','Rotativo do cartão'],['emprestimo','Empréstimo pessoal'],['financ','Financiamento'],['parcelado','Compra parcelada com juros'],['outra','Outra']];
 let S={conta:0,guardado:0,renda:0,dia:5,vari:0,aporte:0,rend:10.5,hz:12,cdi:14.5,ipca:4.5,cdb:100,lci:90,spr:6,ini:1000,apm:300,prz:24,bills:[],tx:[],moves:[],cards:[],installments:[],incomes:[],faturasPagas:{},orc:{},metas:[],regras:[],neg:[],bancos:[],semRec:[],meuNome:'',priv:0,debts:[],dvx:0};
 const DEF=JSON.parse(JSON.stringify(S));
@@ -1023,6 +1024,12 @@ function dividas(){const L=S.debts,tot=L.reduce((a,d)=>a+d.saldo,0),jm=L.reduce(
 PG.dividas=['Dívidas','Dívidas e juros','Quanto cada dívida custa por mês e o caminho mais barato para quitar.',dividas];
 NIC.dividas='<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>';
 
+/* privacidade: esconde todo valor em R$ que aparece na tela */
+function privMask(){const m=$('#m');if(!m)return;m.querySelectorAll('svg title').forEach(t=>t.remove());
+ const re=/[−+-]?\s?R\$[\s\u00a0]*[\d.]+(?:,\d+)?/g,w=document.createTreeWalker(m,NodeFilter.SHOW_TEXT,{acceptNode:n=>/R\$/.test(n.nodeValue)&&!n.parentElement.closest('script,style,textarea,svg')?1:3}),L=[];let n;while(n=w.nextNode())L.push(n);
+ L.forEach(n=>{const t=n.nodeValue;re.lastIndex=0;let i=0,x;const f=document.createDocumentFragment();while((x=re.exec(t))){if(x.index>i)f.appendChild(document.createTextNode(t.slice(i,x.index)));const sp=document.createElement('span');sp.className='pvm';sp.textContent=x[0];f.appendChild(sp);i=x.index+x[0].length}
+  if(!f.childNodes.length)return;if(i<t.length)f.appendChild(document.createTextNode(t.slice(i)));n.parentNode.replaceChild(f,n)});
+ m.querySelectorAll('svg text').forEach(t=>{if(/\d/.test(t.textContent)&&/R\$|mil|\bk\b|\d[.,]\d|\d{3,}/.test(t.textContent))t.classList.add('pvm')})}
 /* navegação: abas no celular, menu lateral no PC */
 const MQ=matchMedia('(max-width:760px)'),TABS=['geral','contas','cartoes','gastos'];
 const ico=id=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${NIC[id]}</svg>`;
@@ -1045,9 +1052,9 @@ function appCard(){const sa=STANDALONE(),web=/^https?:$/.test(location.protocol)
 const NG=[['Visão',['geral','hist','horizonte']],['Dia a dia',['contas','cartoes','gastos']],['Planejar',['plano','dividas','calc','rend','investir']],['Sistema',['config']]];
 function render(){const h=location.hash.slice(1),k=PG[h]?h:'geral',p=PG[k],nv=$('#nv');
  nv.innerHTML=navHtml(k);
- $('#m').innerHTML=`<header class="ph"><div class="top"><div class="crumb">Meu caixa<i>/</i><b>${p[0]}</b></div><div class="tw"><span class="dt">${new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'}).replace('.','')}</span><button class="eye" onclick="togPriv()" aria-pressed="${!!S.priv}" aria-label="Ocultar ou mostrar valores" title="Ocultar valores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>${S.priv?'<path d="M4 4l16 16"/>':''}</svg></button>${uiSeg()}${(S.ui||'neo')=='neo'?themeSeg():''}</div></div><h1>${p[1]}</h1><p class="sub">${p[2]}</p></header>`+p[3]();
+ $('#m').innerHTML=`<header class="ph"><div class="top"><div class="crumb">Meu caixa<i>/</i><b>${p[0]}</b></div><div class="tw"><span class="dt">${new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'}).replace('.','')}</span><button class="eye" onclick="togPriv()" aria-pressed="${!!S.priv}" aria-label="Ocultar ou mostrar valores" title="Ocultar valores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>${S.priv?'<path d="M4 4l16 16"/>':''}</svg></button></div></div><h1>${p[1]}</h1><p class="sub">${p[2]}</p></header>`+p[3]();
  const on=nv.querySelector('.on');if(on&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.offsetWidth/2;
- if(k=='horizonte')hover();if(IMP&&$('#xb'))impSum();const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=getComputedStyle(document.body).backgroundColor}
+ if(k=='horizonte')hover();if(IMP&&$('#xb'))impSum();const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=getComputedStyle(document.body).backgroundColor;if(S.priv)privMask()}
 addEventListener('hashchange',()=>{fechaMais();render();scrollTo(0,0)});
 addEventListener('storage',e=>{if(e.key==K&&e.newValue){try{S=clean(JSON.parse(e.newValue));norm();applyTheme();render()}catch(x){}}});
 MQ.addEventListener('change',()=>{fechaMais();render()});
