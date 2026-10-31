@@ -1,0 +1,12 @@
+Gerenciador financeiro v0.12 - pacote para hospedar e instalar no celular
+
+1. Suba TODOS os arquivos desta pasta (sem renomear o index.html) num servico gratuito com https:
+   - Netlify Drop (app.netlify.com/drop): arraste a pasta.
+   - GitHub Pages: envie para um repositorio e ative Pages.
+   - Cloudflare Pages: envie os arquivos.
+2. Abra o endereco gerado no celular.
+3. Android (Chrome): menu > Instalar app. iPhone (Safari): Compartilhar > Adicionar a Tela de Inicio.
+
+IMPORTANTE: os dados ficam guardados por endereco. Antes de trocar do arquivo local para o endereco
+hospedado, va em Ajustes > Baixar backup (.json) e depois use Restaurar de arquivo no endereco novo.
+Para atualizar o app no futuro, suba o novo index.html (e mude V em sw.js para o cache renovar).
