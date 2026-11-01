@@ -449,7 +449,7 @@ const CC=['#2f6690','#1d6b57','#c58b2a','#a65a8a','#c4553d','#5a6fb0','#7a8f3a',
 const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],WD=['dom','seg','ter','qua','qui','sex','sáb'];
 const MESL=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const RT={salario:'Salário',vale:'Vale-alimentação',bonus:'Bônus',outro:'Outras entradas'};
-const K='gf-azim-v1',VER='0.17';
+const K='gf-azim-v1',VER='0.18';
 var UPDN=null; // novidades da versão pendente (vêm do service worker novo)
 const UPD={reg:null,aceito:false};
 const DT=[['cheque','Cheque especial'],['rotativo','Rotativo do cartão'],['emprestimo','Empréstimo pessoal'],['financ','Financiamento'],['parcelado','Compra parcelada com juros'],['outra','Outra']];
@@ -478,6 +478,13 @@ async function flush(){if(BUSY)return;BUSY=true;try{while(PEND!==null){const j=P
 async function settle(){if(!BUSY&&PEND!==null)flush();while(BUSY)await idle();return PEND===null&&!SAVE_ERR}
 async function stashRaw(j){try{localStorage.setItem(K+'-prev',KEY?JSON.stringify(await seal(j)):j);return true}catch(e){return false}}
 const stash=()=>stashRaw(JSON.stringify(S));
+const BKA=K+'-auto',BKA_MAX=5;
+const hojeStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function listaAuto(){try{const a=JSON.parse(localStorage.getItem(BKA)||'[]');return Array.isArray(a)?a.filter(x=>x&&typeof x=='object'):[]}catch(e){return []}}
+async function guardarAuto(motivo){if(LOCKED||!S)return false;try{const txt=dump();const b=KEY?await seal(txt):txt;const item={m:motivo,dia:hojeStr(),d:new Date().toISOString(),enc:!!KEY,b};localStorage.setItem(BKA,JSON.stringify([item,...listaAuto()].slice(0,BKA_MAX)));return true}catch(e){return false}}
+const autoDiario=async()=>{if(listaAuto().some(x=>x.m==='diario'&&x.dia===hojeStr()))return;await guardarAuto('diario')};
+function autoCard(){const a=listaAuto();if(!a.length)return '<p class="note" style="margin:12px 0 0">Ainda não há cópias automáticas.</p>';return `<p class="note" style="margin:12px 0 8px">Cópias automáticas: uma por dia e antes de apagar ou restaurar. Guardamos as ${BKA_MAX} últimas. Com senha, ficam criptografadas.</p><div class="row">${a.map((x,i)=>`<button class="gh" data-on-click="hAuto" data-i="${i}">${E(x.m==='diario'?'Diária':x.m)} · ${E(new Date(x.d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))}</button>`).join('')}</div>`}
+async function restaurarAuto(el){const x=listaAuto()[+el.dataset.i];if(!x)return toast('Essa cópia não existe mais.');let txt;if(x.enc){if(!KEY)return toast('Destrave o app para abrir esta cópia.');try{txt=await openK(KEY,x.b)}catch(e){return toast('Não consegui abrir esta cópia.')}}else txt=x.b;modal('Restaurar cópia?','Seus dados atuais serão substituídos. Dá para desfazer logo em seguida.',()=>finishRestore(txt),'Restaurar')}
 const LKO=[[0,'Ao sair do app'],[5,'Após 5 min'],[15,'Após 15 min'],[60,'Após 1 hora'],[-1,'Só ao fechar a aba']];
 const lockMin=()=>{const v=localStorage.getItem(K+'-lock');return v==null?5:+v};
 function hardLock(o){if(PEND!==null||SAVE_ERR){toast('Há alterações que ainda não foram salvas. Bloqueio cancelado para não perder dados.');return false}KEY=null;VAULT=null;ENV=o||null;LOCKED=true;S=clean({});document.querySelectorAll('.ov').forEach(x=>x.remove());document.documentElement.classList.add('locked');lockScreen();return true}
@@ -616,7 +623,13 @@ function parseBackup(txt){if(typeof txt!='string'||txt.length>BK_LIM.bytes)throw
 async function applyBackup(txt){let o;try{o=JSON.parse(txt)}catch(e){return toast('Arquivo inválido: não é um JSON.')}
  if(o&&o.enc===1)return pwAsk('Backup protegido','Digite a senha deste backup.',async({pw})=>{const t=await openEnv(o,pw);await finishRestore(t)},{ok:'Restaurar'});
  return finishRestore(txt)}
+function verMaior(a,b){const p=s=>String(s).split('.').map(x=>parseInt(x,10)||0);const x=p(a),y=p(b);for(let i=0;i<Math.max(x.length,y.length);i++){const d=(x[i]||0)-(y[i]||0);if(d)return d>0}return false}
 async function finishRestore(txt){let n;try{n=parseBackup(txt)}catch(m){return toast(String(m))}
+ let av='';try{const o=JSON.parse(txt);if(o&&typeof o.appv=='string')av=o.appv}catch(e){}
+ if(av&&verMaior(av,VER))return modal('Backup de versão mais nova',`Este backup é da versão ${av}, e você está na ${VER}. Esta versão pode não reconhecer alguns dados do backup, e eles ficariam de fora. Antes de continuar, baixe um backup dos seus dados atuais.`,()=>restaurarDados(n),'Restaurar mesmo assim');
+ return restaurarDados(n)}
+async function restaurarDados(n){
+ if(!await guardarAuto('antes de restaurar'))return toast('Não consegui guardar uma cópia de segurança. A restauração foi cancelada.');
  if(!await settle())return toast('Não consegui salvar os dados atuais. A restauração foi cancelada.');
  if(!await stash())return toast('Não consegui guardar a versão atual. A restauração foi cancelada.');
  const prevS=S,raw=localStorage.getItem(K);S=n;norm();S.um=S.ub;persist();
@@ -631,7 +644,7 @@ async function undoImp(){let p;try{p=JSON.parse(localStorage.getItem(K+'-prev'))
  if(!await stashRaw(cur))toast('Dados recuperados, mas não consegui guardar a versão atual para desfazer.');
  applyTheme();render();toast('Dados anteriores recuperados.')}
 try{const o0=JSON.parse(localStorage.getItem(K)||'{}');if(o0&&o0.enc===1){ENV=o0;LOCKED=true}}catch(e){}
-S=LOCKED?clean({}):clean(readLS());norm();if(!LOCKED)applyTheme();
+S=LOCKED?clean({}):clean(readLS());norm();if(!LOCKED)applyTheme();if(!LOCKED)autoDiario();
 const set=(k,v)=>{S[k]=+v||0;save();render()};
 const opt=s=>CATS.map(c=>`<option ${c==s?'selected':''}>${E(c)}</option>`).join('');
 const fld=(k,l,st)=>`<label class="fld">${l}<input type="number" step="${st||'any'}" value="${S[k]}" data-on-change="h10" data-p10_1="${E(k)}"></label>`;
@@ -929,7 +942,7 @@ function investir(){const{ini,apm,prz,cdi,ipca,cdb,lci,spr}=S,d=prz*30,ir=d<=180
 /* ---------- dados ---------- */
 async function exp(){const t=$('#bk');if(!t)return;let x=dump();if(KEY)x=JSON.stringify(await seal(x));t.value=x;t.select();try{navigator.clipboard.writeText(t.value)}catch(e){}toast('Backup em texto gerado. Copie e guarde em lugar seguro.')}
 function imp(){applyBackup($('#bk').value)}
-function wipe(){const prot=KEY||LOCKED;modal('Apagar tudo?',prot?'Remove todos os dados protegidos deste navegador. Não há como desfazer, nem recuperar a senha.':'Remove todos os dados deste navegador. Logo depois dá para recuperar com “Desfazer última troca”.',()=>{if(!prot){try{localStorage.setItem(K+'-prev',JSON.stringify(S))}catch(e){}}else localStorage.removeItem(K+'-prev');localStorage.removeItem(K);localStorage.removeItem(K+'-css');location.reload()},'Apagar')}
+function wipe(){const prot=KEY||LOCKED;modal('Apagar tudo?',prot?'Remove todos os dados protegidos deste navegador. Não há como desfazer, nem recuperar a senha.':'Remove todos os dados deste navegador. Antes, o app guarda uma cópia de segurança, que você pode restaurar em Dados e privacidade.',async()=>{if(prot){localStorage.removeItem(K+'-prev');localStorage.removeItem(BKA)}else{if(!await guardarAuto('antes de apagar'))return toast('Não consegui guardar uma cópia de segurança. Nada foi apagado.');try{localStorage.setItem(K+'-prev',JSON.stringify(S))}catch(e){}}localStorage.removeItem(K);localStorage.removeItem(K+'-css');location.reload()},'Apagar')}
 function demo(){const n=new Date();Object.assign(S,{conta:3200,guardado:8500,renda:4500,dia:5,vari:1400,aporte:400});
  S.bills=[['Aluguel',1100,'Moradia'],['Internet',99.9,'Assinaturas'],['Plano de saúde',210,'Saúde']].map(([nome,valor,cat],i)=>({id:uid(),nome,valor,cat,data:iso(dPlus(3+i*5)),rec:1,paid:{}}));
  S.tx=[];for(let m=0;m<4;m++)['Mercado','Transporte','Lazer','Tecnologia'].forEach((c,i)=>{for(let k=0;k<3;k++){const dd=new Date(n.getFullYear(),n.getMonth()-m,3+k*7+i);if(dd>n)continue;S.tx.push({id:uid(),data:iso(dd),valor:+(60+((m*7+i*13+k*29)%9)*22).toFixed(2),cat:c,desc:c})}});
@@ -945,7 +958,8 @@ PG.config=['Ajustes','Ajustes e aparência','Temas, cores, relevo, categorias e 
 PG.sobre=['Sobre','Versões, créditos e dados','Versões do app, créditos das bibliotecas usadas e como seus dados são tratados.',sobre];
 let SB={tab:'versoes'};
 const VERS=[
- {v:'0.17',st:'Em revisão (candidata)',itens:['Atualização com escolha: a nova versão só entra quando você clica em "Atualizar agora"','Aviso com as principais novidades, "Atualizar agora", "Ver novidades" e "Depois"','Botão "Verificar atualização" em Sistema > Sobre > Versões','Página principal abre do cache até a atualização ser aceita','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Seus dados e backups são os mesmos nas duas versões']},
+ {v:'0.18',st:'Em revisão (candidata)',itens:['Cópia automática dos dados uma vez por dia, com as 5 últimas guardadas em Dados e privacidade','Cópia de segurança antes de apagar tudo e antes de restaurar um backup','Aviso antes de restaurar um backup de versão mais nova, com a opção de continuar','Lista de cópias automáticas com botão de restaurar cada uma','Com senha, as cópias automáticas ficam criptografadas']},
+ {v:'0.17',st:'Versão anterior',itens:['Atualização com escolha: a nova versão só entra quando você clica em "Atualizar agora"','Aviso com as principais novidades, "Atualizar agora", "Ver novidades" e "Depois"','Botão "Verificar atualização" em Sistema > Sobre > Versões','Página principal abre do cache até a atualização ser aceita','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Seus dados e backups são os mesmos nas duas versões']},
  {v:'0.16',st:'Versão anterior',itens:['Tela Sobre: versões, créditos, dados e privacidade','Limites de PDF: 10 MB, 100 páginas, 30 s e 50 mil linhas, com mensagens claras','PDF sem internet: o CMap usado pelos bancos fica guardado no aparelho','Fontes locais (sem Google Fonts)','SHA256SUMS.txt para conferir a integridade dos arquivos','Modo privacidade oculta só valores em R$ e campos de dinheiro (temas, taxas e ajustes continuam visíveis)','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Padrões sem informações pessoais (categorias e exemplo de cartões genéricos)']},
  {v:'0.15',st:'Versão anterior',itens:['Excluir cartão pede confirmação; cartão com parcelamentos não pode ser excluído','Compra parcelada com 0 parcelas é recusada','Colar no editor de notas mantém negrito, itálico e links (com sanitização)','Restauração e desfazer transacionais','Limites para backups: 20 MB, texto e quantidade de registros','Criptografia: ativar, trocar e desativar senha de forma transacional','Service worker: pré-cache do leitor de PDF']},
  {v:'0.14',st:'Versão anterior',itens:['Sem registro detalhado de mudanças para esta versão.']}
@@ -969,7 +983,7 @@ function sbDados(){let bytes=0;try{bytes=new Blob([localStorage.getItem(K)||''])
  <div class="card"><div class="ch"><h2>Senha e criptografia</h2></div><p class="note" style="margin:0">Com senha, os dados são criptografados neste aparelho (AES-256-GCM, com chave derivada por PBKDF2). <b>Não há recuperação de senha:</b> sem ela, os dados protegidos não podem ser abertos. Guarde um backup protegido.</p></div>
  <div class="card"><div class="ch"><h2>Backup e restauração</h2></div><p class="note" style="margin:0 0 12px">${backupInfo()}</p><p class="note" style="margin:0 0 12px">O backup (.json) é um arquivo que você guarda fora do app. Sem senha, ele fica em texto aberto: guarde em local seguro.</p><div class="row"><button class="pri" data-on-click="h67">Baixar backup (.json)</button><button class="gh" data-on-click="h70">Restaurar de arquivo</button></div><input id="fi" type="file" accept=".json,application/json" hidden data-on-change="h71"></div>
  <div class="card"><div class="ch"><h2>Modo privacidade (olho)</h2></div><p class="note" style="margin:0">Oculta os valores em R$ e os campos de dinheiro na tela. Não apaga nem criptografa nada. Títulos, taxas, temas e ajustes continuam visíveis.</p></div>
- <div class="card"><div class="ch"><h2>Apagar dados</h2></div><p class="note" style="margin:0 0 12px">Remove os dados deste navegador. ${KEY?'Com senha, não há como desfazer.':'Sem senha, dá para desfazer logo depois.'}</p><button class="gh" data-on-click="h77">Apagar tudo</button></div>`}
+ <div class="card"><div class="ch"><h2>Apagar dados</h2></div><p class="note" style="margin:0 0 12px">Remove os dados deste navegador. ${KEY?'Com senha, não há como desfazer.':'Sem senha, dá para desfazer logo depois.'}</p><button class="gh" data-on-click="h77">Apagar tudo</button></div>${autoCard()}`}
 NIC.config='<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>';
 let TMP=null;
 function setAj(k,v,r){S.aj[k]=v;applyTheme();if(r){save();render()}}
@@ -998,7 +1012,7 @@ function config(){const c=eff(S.tema),A=S.aj,nm=UIP[S.ui]?UIS.find(u=>u[0]==S.ui
  <div class="card"><h2>Tema por imagem</h2><p class="note" style="margin:0 0 14px">Envie um print, foto ou paleta. O app extrai as cores principais e monta um tema com contraste seguro. O estilo em relevo continua; muda só a paleta.</p><div class="row"><button class="gh" data-on-click="h62">Escolher imagem</button><input id="ti" type="file" accept="image/*" hidden data-on-change="h63"></div>
  ${TMP?`<div class="row" style="margin-top:16px;align-items:center">${['bg','ink','ac','fe','bl'].map(f=>`<span class="dot lg2" style="background:${TMP[f]}" data-tip="${f}"></span>`).join('')}<button class="pri" data-on-click="h64">Aplicar tema</button><button class="gh" data-on-click="h65">Descartar</button></div>`:''}</div>
  <div class="card"><h2>Forma e movimento</h2><div class="row">${sl('relevo','Relevo',0,150)}${sl('raio','Arredondamento',0,150)}${sl('brilho','Brilho',0,200)}</div>${tg('dest','Card de destaque','Primeiro indicador de cada tela com a cor do card principal.')}${tg('mov','Movimento suave','Transições e elevação ao passar o mouse.')}<div class="row" style="margin-top:14px"><button class="gh" data-on-click="h66">Restaurar forma</button></div></div>
- ${catCard()}${appCard()}<div class="card" ><h2>Seus dados</h2><p class="note" style="margin:0 0 14px">${backupInfo()}</p><div class="row" style="margin-bottom:10px"><button class="pri" data-on-click="h67">Baixar backup (.json)</button>${KEY?'':'<button class="gh" data-on-click="h68">Backup com senha</button>'}<button class="gh" data-on-click="h69">Compartilhar backup</button><button class="gh" data-on-click="h70">Restaurar de arquivo</button><input id="fi" type="file" accept=".json,application/json" hidden data-on-change="h71">${hasPrev()?'<button class="gh" data-on-click="h72">Desfazer última troca</button>':''}<button class="gh" data-on-click="h73">Backup em texto</button><button class="gh" data-on-click="h74">Restaurar do texto</button><button class="gh" data-on-click="h75">Exportar histórico (CSV)</button><button class="gh" data-on-click="h76">Carregar exemplo</button><button class="gh" data-on-click="h77">Apagar tudo</button></div>
+ ${catCard()}${appCard()}<div class="card" ><h2>Seus dados</h2><p class="note" style="margin:0 0 14px">${backupInfo()}</p><div class="row" style="margin-bottom:10px"><button class="pri" data-on-click="h67">Baixar backup (.json)</button>${KEY?'':'<button class="gh" data-on-click="h68">Backup com senha</button>'}<button class="gh" data-on-click="h69">Compartilhar backup</button><button class="gh" data-on-click="h70">Restaurar de arquivo</button><input id="fi" type="file" accept=".json,application/json" hidden data-on-change="h71">${hasPrev()?'<button class="gh" data-on-click="h72">Desfazer última troca</button>':''}<button class="gh" data-on-click="h73">Backup em texto</button><button class="gh" data-on-click="h74">Restaurar do texto</button><button class="gh" data-on-click="h75">Exportar histórico (CSV)</button><button class="gh" data-on-click="h76">Carregar exemplo</button><button class="gh" data-on-click="h77">Apagar tudo</button></div>${autoCard()}
  <textarea id="bk" placeholder="Os dados ficam salvos neste navegador. Para guardar uma cópia, gere o backup e cole o texto num lugar seguro; para restaurar, cole aqui e use “Restaurar do texto”."></textarea></div>`}
 function passos(){const P4=[['Saldo',S.conta!=0||S.guardado!=0,'saldo'],['Renda',!semRenda(),'rend'],['Contas',S.bills.length>0,'contas'],['Gastos',S.tx.length>0,'gastos']],cu=P4.findIndex(q=>!q[1]);if(cu<0)return '';
  return `<div class="card"><h2>Comece por aqui</h2><div class="steps">${P4.map((q,i)=>`<button class="stp ${q[1]?'ok':i==cu?'cur':''}" data-on-click="hPasso" data-k="${E(q[2])}"><span class="sc">${q[1]?'✓':i+1}</span>${q[0]}</button>`).join('')}</div><p class="note" style="text-align:center">${['Informe quanto tem na conta e quanto já guardou.','Cadastre seu salário ou outras rendas.','Cadastre suas contas fixas para ver os próximos vencimentos.','Lance seus primeiros gastos para ver para onde vai o dinheiro.'][cu]}</p></div>`}
@@ -1400,6 +1414,7 @@ h74:(el,ev)=>{imp()},
 h75:(el,ev)=>{dlCsv(1)},
 h76:(el,ev)=>{demo()},
 h77:(el,ev)=>{wipe()},
+hAuto:(el,ev)=>{restaurarAuto(el)},
 h78:(el,ev)=>{F.pg=(+el.dataset.p78_1);render()},
 h79:(el,ev)=>{F.pg=(+el.dataset.p79_1);render()},
 h80:(el,ev)=>{F.pg=(+el.dataset.p80_1);render()},

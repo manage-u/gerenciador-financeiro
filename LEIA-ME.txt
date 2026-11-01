@@ -1,8 +1,8 @@
-Meu caixa - versão 0.17 (pacote de hospedagem, versão candidata para revisão)
+Meu caixa - versão 0.18 (pacote de hospedagem, versão candidata para revisão)
 
 ARQUIVOS
 - index.html ............ aplicativo completo (arquivo único, sem alterar o nome)
-- sw.js ................. service worker (cache meu-caixa-v0.17)
+- sw.js ................. service worker (cache meu-caixa-v0.18)
 - manifest.webmanifest .. instalação como app
 - icon-192.png, icon-512.png
 - vendor/pdfjs/ ......... leitor de PDF local (PDF.js 6.4.299, licença Apache-2.0 em LICENSE-pdfjs).
@@ -37,7 +37,7 @@ Backups de versões anteriores (inclusive protegidos por senha) continuam sendo 
 
 ATUALIZAR O APP
 Suba o novo index.html, o sw.js e as pastas vendor/ e SHA256SUMS.txt. Ao trocar o V do cache em sw.js
-(aqui, meu-caixa-v0.17), o navegador instala a nova versão e remove só os caches do Meu caixa.
+(aqui, meu-caixa-v0.18), o navegador instala a nova versão e remove só os caches do Meu caixa.
 A nova versão fica esperando: o app mostra um aviso e só troca quando a pessoa clica em "Atualizar agora".
 Até lá, continua usando a versão atual. Ela também pode clicar em "Depois" (o aviso volta na próxima
 abertura) ou verificar manualmente em Sistema > Sobre > Verificar atualização.
@@ -94,5 +94,5 @@ PENDÊNCIAS CONHECIDAS
 - Não há sistema de versões estável/experimental.
 
 REVERTER PARA A VERSÃO ANTERIOR
-Suba de volta o index.html, o sw.js e a pasta vendor/ da versão 0.16 (meu-caixa-v0.16-hospedagem.zip).
-Os dados não são alterados pela troca de versão; a versão 0.17 aceita os backups gerados pela 0.15 e pela 0.16.
+Suba de volta o index.html, o sw.js e a pasta vendor/ da versão 0.17 (meu-caixa-v0.17-hospedagem.zip).
+Os dados não são alterados pela troca de versão; a versão 0.18 aceita os backups gerados pela 0.14, 0.15, 0.16 e 0.17.
