@@ -1,12 +1,98 @@
-Gerenciador financeiro v0.12 - pacote para hospedar e instalar no celular
+Meu caixa - versão 0.17 (pacote de hospedagem, versão candidata para revisão)
 
-1. Suba TODOS os arquivos desta pasta (sem renomear o index.html) num servico gratuito com https:
+ARQUIVOS
+- index.html ............ aplicativo completo (arquivo único, sem alterar o nome)
+- sw.js ................. service worker (cache meu-caixa-v0.17)
+- manifest.webmanifest .. instalação como app
+- icon-192.png, icon-512.png
+- vendor/pdfjs/ ......... leitor de PDF local (PDF.js 6.4.299, licença Apache-2.0 em LICENSE-pdfjs).
+    OBRIGATÓRIO para importar PDF. Mantenha esta pasta junto com o index.html, com a estrutura inalterada.
+- vendor/fonts/ ......... fontes Hanken Grotesk e Caveat em WOFF2 (licença SIL OFL 1.1:
+    OFL-HankenGrotesk.txt e OFL-Caveat.txt). Nenhuma requisição é feita ao Google Fonts.
+- SHA256SUMS.txt ........ soma SHA-256 de todos os arquivos acima (veja VERIFICAR A INTEGRIDADE).
+
+HOSPEDAGEM (precisa de https)
+1. Suba TODOS os arquivos desta pasta, mantendo as subpastas (vendor/pdfjs e vendor/fonts).
    - Netlify Drop (app.netlify.com/drop): arraste a pasta.
-   - GitHub Pages: envie para um repositorio e ative Pages.
+   - GitHub Pages: envie para um repositório e ative Pages.
    - Cloudflare Pages: envie os arquivos.
-2. Abra o endereco gerado no celular.
-3. Android (Chrome): menu > Instalar app. iPhone (Safari): Compartilhar > Adicionar a Tela de Inicio.
+2. Abra o endereço gerado no celular ou no computador.
+3. Android (Chrome): menu > Instalar app. iPhone (Safari): Compartilhar > Adicionar à Tela de Início.
 
-IMPORTANTE: os dados ficam guardados por endereco. Antes de trocar do arquivo local para o endereco
-hospedado, va em Ajustes > Baixar backup (.json) e depois use Restaurar de arquivo no endereco novo.
-Para atualizar o app no futuro, suba o novo index.html (e mude V em sw.js para o cache renovar).
+VERIFICAR A INTEGRIDADE
+Antes de publicar, confira se os arquivos não foram alterados ou corrompidos no envio.
+- Linux / macOS, dentro da pasta desta distribuição:
+      sha256sum -c SHA256SUMS.txt
+  (no macOS, se não existir sha256sum:  shasum -a 256 -c SHA256SUMS.txt)
+- Windows (PowerShell), para um arquivo:
+      Get-FileHash .\index.html -Algorithm SHA256
+  e compare com a linha correspondente em SHA256SUMS.txt.
+Todas as linhas devem mostrar "OK" (Linux/macOS). Qualquer "FALHOU" ou "não encontrado" indica
+arquivo alterado ou faltando: baixe o pacote de novo antes de publicar.
+
+IMPORTANTE SOBRE OS DADOS
+Os dados ficam guardados por endereço. Antes de trocar do arquivo local para o endereço hospedado,
+vá em Ajustes > Baixar backup (.json) e depois use Restaurar de arquivo no endereço novo.
+Backups de versões anteriores (inclusive protegidos por senha) continuam sendo aceitos.
+
+ATUALIZAR O APP
+Suba o novo index.html, o sw.js e as pastas vendor/ e SHA256SUMS.txt. Ao trocar o V do cache em sw.js
+(aqui, meu-caixa-v0.17), o navegador instala a nova versão e remove só os caches do Meu caixa.
+A nova versão fica esperando: o app mostra um aviso e só troca quando a pessoa clica em "Atualizar agora".
+Até lá, continua usando a versão atual. Ela também pode clicar em "Depois" (o aviso volta na próxima
+abertura) ou verificar manualmente em Sistema > Sobre > Verificar atualização.
+Caches de outros projetos no mesmo endereço são preservados.
+
+LIMITES DE PDF (importação de extrato, fatura e comprovante de Pix)
+- Tamanho máximo do arquivo: 10 MB. Acima disso o arquivo é recusado antes de ser lido.
+- Número máximo de páginas: 100.
+- Tempo máximo de leitura: 30 segundos. A leitura cede o controle ao navegador entre as páginas,
+  então a tela continua respondendo.
+- Quantidade máxima de linhas de texto extraídas: 50 mil.
+Quando um limite é ultrapassado, o app mostra a mensagem com o motivo e o limite. Divida o PDF por
+período ou exporte só o período desejado no banco e tente de novo.
+
+PDF SEM INTERNET
+- O app lê PDFs sem conexão. Os recursos do leitor de PDF usados para ler o texto (CMap
+  UniJIS-UCS2-H) já ficam guardados no cache do service worker na primeira visita online.
+- O cache offline não inclui todos os CMaps predefinidos do PDF.js (são cerca de 170 arquivos). Um PDF
+  que use outro CMap predefinido só é lido sem internet depois de uma leitura feita com internet
+  (o recurso passa a ficar no cache). Se ainda não estiver no cache, o app mostra uma mensagem pedindo
+  para abrir o app com internet uma vez.
+- As fontes padrão do PDF (standard_fonts/) não são necessárias para ler o texto e não são
+  pré-carregadas.
+
+MUDANÇAS DESTA VERSÃO
+- Atualização com escolha: a nova versão só entra quando a pessoa clica em "Atualizar agora". Aviso
+  com "Atualizar agora" e "Depois"; botão "Verificar atualização" em Sistema > Sobre.
+- A página principal abre do cache até a atualização ser aceita.
+- O aviso mostra a versão nova e os principais tópicos; a lista completa fica em Sistema > Sobre > Versões.
+- Nova tela Sistema > Sobre, com três abas: Versões (histórico resumido), Créditos (bibliotecas e
+  fontes usadas, com a licença de cada uma) e Dados e privacidade (onde os dados ficam, criptografia,
+  backup, apagamento e o que o app não faz, como enviar dados a servidores).
+- Modo privacidade (olho): oculta valores em R$ e campos de dinheiro. Títulos, temas, taxas e
+  ajustes deixaram de ser desfocados por engano.
+- Cores personalizadas (Ajustes > Cores) valem em todos os estilos: Neo, Mono, Lime e Noir. Cada
+  estilo guarda as próprias cores. "Tema por imagem" aplica as cores extraídas no estilo escolhido.
+- Padrões sem informações pessoais: a categoria padrão é "Negócio" e o exemplo ("Carregar exemplo")
+  usa cartões genéricos. Seus dados salvos não são alterados.
+- Excluir cartão pede confirmação. Cartão com parcelamentos não pode ser excluído: apague antes os parcelamentos.
+- Compra parcelada com 0 parcelas é recusada (antes era gravada como 1 parcela).
+- Colar texto no editor de notas mantém negrito, itálico e links (com sanitização); scripts e HTML perigoso continuam bloqueados.
+- Restauração de backup e desfazer agora são transacionais: se a gravação falhar, os dados anteriores são mantidos.
+- Limites para backups: 20 MB, 200 mil caracteres por texto e limites por tipo de registro.
+- Limites de PDF: tamanho, páginas, tempo e linhas, com mensagens claras (veja acima).
+- Criptografia: ativação, troca e desativação de senha são transacionais; o bloqueio só ocorre após a gravação ser confirmada.
+- Service worker: pré-cache dos arquivos do PDF.js, do CMap usado e das fontes para uso sem internet.
+- Fontes locais: o app não carrega mais nada do Google Fonts.
+- Integridade: SHA256SUMS.txt com a soma de todos os arquivos da distribuição.
+
+PENDÊNCIAS CONHECIDAS
+- Testes em aparelho real (instalação como app no Android e no iPhone, leitura de PDF real e uso
+  sem rede) não foram feitos nesta etapa.
+- Testes realizados apenas em Chromium. Firefox e Safari não foram testados.
+- Não há sistema de versões estável/experimental.
+
+REVERTER PARA A VERSÃO ANTERIOR
+Suba de volta o index.html, o sw.js e a pasta vendor/ da versão 0.16 (meu-caixa-v0.16-hospedagem.zip).
+Os dados não são alterados pela troca de versão; a versão 0.17 aceita os backups gerados pela 0.15 e pela 0.16.
