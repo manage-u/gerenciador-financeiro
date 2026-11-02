@@ -71,6 +71,17 @@ html[data-ui] .card.cc-carrossel{background:linear-gradient(180deg,#1a1e2c,#1114
 .cc-top h2{margin:0 0 4px}
 .cc-acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .cc-novo-top{margin:0}.cc-novo-top[open]{flex:1 1 100%}
+.cc-top:has(.cc-novo-top[open]){flex-wrap:wrap;row-gap:10px}
+.cc-novo-top[open] .cc-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 0;align-items:end;text-align:left}
+.cc-novo-top .cc-form .fld{display:grid;gap:4px;min-width:0;font-size:12px;color:#c9d1dc;margin:0}
+.cc-novo-top .cc-form .fld.w2{grid-column:1/-1}
+.cc-novo-top .cc-form input{width:100%;min-width:0;margin:0}
+.cc-novo-top .cc-form .pri{grid-column:1/-1;width:100%;margin:0}
+.card.cc-carrossel:has(.cc-novo-top[open]){overflow-y:auto;max-height:100%}
+.card.cc-carrossel .cc-novo-top summary,.card.cc-carrossel .cc-novo-top summary *{color:#eef0f5}
+.card.cc-carrossel .cc-top:has(.cc-novo-top[open]) .cc-open-top{display:none}
+.card.cc-carrossel:has(.cc-novo-top[open]) .cc-top{position:sticky;top:-18px;z-index:2;margin:-18px -20px 0;padding:18px 20px 8px;background:#161a26;border-radius:18px 18px 0 0}
+.card.cc-carrossel:has(.cc-novo-top[open]) .cc-arc{flex:0 0 auto;height:240px}
 .cc-open-top{border:0;border-radius:999px;padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
 @media(min-width:900px){.cc-open-top{display:none}}
 /* Temas com moldura (Mono, Lime, Noir): o app ocupa a janela toda no computador */
@@ -1662,6 +1673,7 @@ hPasso:(el)=>{const k=el.dataset.k;if(k=='saldo')$('.sv input').focus();else loc
 document.addEventListener('pointerdown',e=>{const w=e.target.closest&&e.target.closest('#ccArc');if(!w||e.target.closest('.cc-go'))return;CDRAG={id:e.pointerId,last:e.clientY,moved:0,tap:e.target.closest('.cc-card')};try{w.setPointerCapture(e.pointerId)}catch(_){}});
 document.addEventListener('pointermove',e=>{if(!CDRAG||e.pointerId!==CDRAG.id)return;const dy=e.clientY-CDRAG.last;CDRAG.last=e.clientY;CDRAG.moved+=Math.abs(dy);const N=ccN();CANG=Math.min(20,Math.max(-(N-1)*CC_PASSO-20,CANG+dy*0.6));ccPaint(false);ccSync()});
 function ccFimArraste(e){if(!CDRAG||e.pointerId!==CDRAG.id)return;const D=CDRAG;CDRAG=null;if(!ccN())return;if(D.moved<5&&D.tap){const ti=+D.tap.dataset.cci;if(!ccPC()&&ti===ccIdx()){CVIEW='detalhe';render()}else ccSnap(-ti*CC_PASSO)}else{ccSnapNear()}}
+document.addEventListener('toggle',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('cc-novo-top')&&document.getElementById('ccArc'))ccPaint(false)},true);
 document.addEventListener('pointerup',ccFimArraste);
 document.addEventListener('pointercancel',ccFimArraste);
 document.addEventListener('wheel',e=>{const w=e.target.closest&&e.target.closest('#ccArc');if(!w)return;e.preventDefault();if(!ccN())return;CANG=Math.min(20,Math.max(-(ccN()-1)*CC_PASSO-20,CANG+(e.deltaY>0?-CC_PASSO*0.5:CC_PASSO*0.5)));ccPaint(false);ccSync();clearTimeout(CTIMER);CTIMER=setTimeout(ccSnapNear,160)},{passive:false});
