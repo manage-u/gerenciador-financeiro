@@ -51,6 +51,19 @@
  .cc-wrap{grid-template-columns:minmax(340px,380px) minmax(0,1fr);align-items:start}
  .cc-side{position:sticky;top:16px}
 }
+
+/* Cartões: leque em arco com trilha e botão circular (referência) */
+.cc-arc{position:relative;height:300px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 85% 50%,#1f2638 0,#131826 45%,#0c1019 100%);touch-action:none;cursor:grab;user-select:none;outline:none;margin-top:8px}
+@media(min-width:600px){.cc-arc{height:340px}}
+.cc-arc:focus-visible{box-shadow:0 0 0 3px var(--ac)}
+.cc-arc.drag{cursor:grabbing}
+.cc-arc.drag .cc-card{transition:none}
+.cc-arc .cc-card{position:absolute;width:var(--cw);height:var(--ch);transition:left .45s cubic-bezier(.2,.8,.2,1),top .45s cubic-bezier(.2,.8,.2,1),transform .45s,opacity .3s;transform-origin:center}
+.cc-arc .cc-card.on{box-shadow:0 16px 34px -12px rgba(0,0,0,.8),0 0 0 2px rgba(255,255,255,.7)}
+.cc-tk{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(167,139,250,.5);pointer-events:none}
+.cc-go{position:absolute;width:44px;height:44px;min-width:44px;min-height:44px;border-radius:50%;border:0;padding:0;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:22px;line-height:1;box-shadow:0 10px 22px -8px rgba(124,58,237,.8);cursor:pointer}
+.cc-count{position:absolute;left:14px;bottom:12px;font-size:12px;color:#9aa3b2}
+.card.cc-carrossel .cc-nav{justify-content:flex-start}
 </style>
 <script>try{var K0='gf-azim-v1',o=JSON.parse(localStorage.getItem(K0)||'{}'),h=document.documentElement,c=localStorage.getItem(K0+'-css');if(c)h.style.cssText=c;if(o.enc)h.classList.add('locked');h.dataset.ui=o.ui||'neo';h.dataset.theme=o.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'escuro':'hibrido');if(o.aj){if(o.aj.dest===0)h.classList.add('nodest');if(o.aj.mov===0)h.classList.add('nomov')}}catch(e){}</script>
 <style>
@@ -830,14 +843,18 @@ function contas(){const op=opens(dPlus(60)),tot=op.reduce((a,o)=>a+o.b.valor,0),
 
 let CSEL=null;
 const CC_COR=['linear-gradient(135deg,#6d28d9,#a78bfa)','linear-gradient(135deg,#ea580c,#fbbf24)','linear-gradient(135deg,#0f766e,#34d399)','linear-gradient(135deg,#1d4ed8,#60a5fa)','linear-gradient(135deg,#be123c,#fb7185)'];
-let CANG=0,CDRAG=null,CTIMER=null;
+let CANG=0,CDRAG=null,CTIMER=null;const CC_PASSO=40;
 function ccN(){return S.cards.length}
-function ccIdx(){const N=ccN();if(!N)return 0;return((Math.round(-CANG/(360/N))%N)+N)%N}
-function ccPaint(anim){const r=document.getElementById('ccRing');if(!r)return;r.classList.toggle('drag',!anim);r.style.transform='rotate('+CANG+'deg)'}
-function ccSync(){const N=ccN();if(!N)return;const i=ccIdx(),c=S.cards[i];const hn=document.getElementById('ccHubN'),ht=document.getElementById('ccHubT');if(hn)hn.textContent=(i+1)+' de '+N;if(ht)ht.textContent=c.nome;document.querySelectorAll('#ccRing .cc-card').forEach(b=>{const on=+b.dataset.cci===i;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});if(CSEL!==c.id){CSEL=c.id;const d=document.getElementById('ccDet');if(d)d.innerHTML=ccDetHTML(c)}}
-function ccSnap(t){const N=ccN();if(!N)return;const d=((t-CANG)%360+540)%360-180;CANG+=d;ccPaint(true);ccSync()}
-function ccStep(d){const N=ccN();if(!N)return;ccSnap(-(ccIdx()+d)*(360/N))}
-function ccSnapNear(){const N=ccN();if(!N)return;ccSnap(-Math.round(-CANG/(360/N))*(360/N))}
+function ccIdx(){const N=ccN();if(!N)return 0;return Math.min(N-1,Math.max(0,Math.round(-CANG/CC_PASSO)))}
+function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;st.classList.toggle('drag',!anim);const W=st.clientWidth||320,H=st.clientHeight||300;const cw=Math.max(120,Math.min(W*0.47,170)),ch=cw/1.6,R=Math.max(110,Math.min(W*0.44,190)),cx=Math.min(cw/2+6,W-24-R-cw/2),cy=H/2,Rt=R+cw/2+16;st.style.setProperty('--cw',cw+'px');st.style.setProperty('--ch',ch+'px');
+ st.querySelectorAll('.cc-card').forEach(b=>{const i=+b.dataset.cci,ang=(i*CC_PASSO+CANG)*Math.PI/180,x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang),ad=Math.abs(ang*180/Math.PI),vis=ad<=64,k=Math.min(ad/CC_PASSO,2);b.style.left=(x-cw/2)+'px';b.style.top=(y-ch/2)+'px';b.style.transform='scale('+(1-0.07*k)+')';b.style.opacity=vis?String(Math.max(0,1-ad/110)):'0';b.style.zIndex=String(100-Math.round(ad));b.style.pointerEvents=vis?'auto':'none'});
+ st.querySelectorAll('.cc-tk').forEach((t,k)=>{const bb=(k-10)*8*Math.PI/180;t.style.left=(cx+Rt*Math.cos(bb)-2)+'px';t.style.top=(cy+Rt*Math.sin(bb)-2)+'px'});
+ const go=st.querySelector('.cc-go');if(go){go.style.left=(cx+Rt-22)+'px';go.style.top=(cy-22)+'px'}
+}
+function ccSync(){const N=ccN();if(!N)return;const i=ccIdx(),c=S.cards[i];const hn=document.getElementById('ccHubN');if(hn)hn.textContent=(i+1)+' de '+N;document.querySelectorAll('#ccArc .cc-card').forEach(b=>{const on=+b.dataset.cci===i;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});if(CSEL!==c.id){CSEL=c.id;const d=document.getElementById('ccDet');if(d)d.innerHTML=ccDetHTML(c)}}
+function ccSnap(t){const N=ccN();if(!N)return;CANG=Math.min(0,Math.max(-(N-1)*CC_PASSO,t));ccPaint(true);ccSync()}
+function ccStep(d){const N=ccN();if(!N)return;ccSnap(-Math.min(N-1,Math.max(0,ccIdx()+d))*CC_PASSO)}
+function ccSnapNear(){ccSnap(-ccIdx()*CC_PASSO)}
 function faturaBloco(v){const st=stOf(v),cls=st=='vencida'?'bad':st=='paga'?'good':'mu';return `<div class="cc-fat"><div class="li" style="border:0;padding:0"><div><b>Fatura de ${refLabel(v.ref)}</b><small class="${cls}">${stLabel(v,st)}</small></div><div class="rt">${R(v.total)}${v.paid?'':`<button class="gh" data-on-click="h26" data-p26_1="${E(v.key)}" data-p26_3="${E(v.key)}">Pagar fatura</button>`}</div></div><details><summary>Composição · ${v.items.length} compra${v.items.length==1?'':'s'}</summary>${v.items.map(it=>`<div class="li"><div>${E(it.desc)} (${it.n}/${it.of})<small>compra em ${fd(it.data)} · ${E(it.cat)}</small></div><div class="rt">${R(it.valor)}</div></div>`).join('')}</details></div>`}
 function ccDetHTML(c){const invs=invoiceList(),dC=invs.filter(v=>v.cardId==c.id),abertas=dC.filter(v=>!v.paid),pend=abertas.reduce((a,v)=>a+v.total,0),atual=dC.filter(v=>stOf(v)=='aberta').reduce((a,v)=>a+v.total,0),prox=abertas.find(v=>v.due>=T),parc=S.installments.filter(x=>x.cardId==c.id),ativos=parc.filter(x=>parcelasRest(x).n>0),lista=[...abertas,...dC.filter(v=>v.paid).reverse().slice(0,6)];
  const apagar=BDC==c.id?`<div class="li cc-conf"><div>Apagar “${E(c.nome)}”?<small>Remove o cartão da lista. As parcelas já lançadas nele não são apagadas.</small></div><div class="rt"><button class="gh" data-on-click="h400">Cancelar</button><button class="pri" style="background:var(--wn)" data-on-click="h401" data-p401_1="${E(c.id)}">Apagar</button></div></div>`:'';
@@ -857,14 +874,14 @@ function faturas(){
  <p class="note">Compra feita até o dia de fechamento entra na fatura que fecha naquele mês; depois, na seguinte. O vencimento cai no mesmo mês se for depois do fechamento, ou no seguinte se for antes.</p>`;
  if(!cards.length)return `<div class="card"><h2>Cartões</h2><p class="note">Nenhum cartão cadastrado ainda. Cadastre um para acompanhar a fatura atual, as dívidas e as parcelas de cada um.</p>${formNovo}</div>`;
  if(!cards.some(c=>c.id==CSEL))CSEL=cards[0].id;
- const N=cards.length,step=360/N,idx=cards.findIndex(c=>c.id==CSEL),c=cards[idx];
- if(ccIdx()!==idx)CANG=-idx*step;
- const ring=cards.map((k,i)=>`<div class="cc-slot" style="transform:rotate(${i*step}deg)"><button class="cc-card${i==idx?' on':''}" style="--bg:${CC_COR[i%CC_COR.length]}" data-cci="${i}" aria-label="${E(k.nome)}" aria-pressed="${i==idx}"><span class="cc-brand">${E(k.nome)}</span><span class="cc-meta">Fecha ${k.fecha} · vence ${k.venc}</span></button></div>`).join('');
- const ticks=Array.from({length:36},(_,k)=>`<div class="cc-slot" style="transform:rotate(${k*10}deg)"><span class="cc-tick"></span></div>`).join('');
- const wheel=`<div class="cc-wheel" id="ccWheel" tabindex="0" aria-label="Roda de cartões: arraste, role a roda ou use as setas"><div class="cc-ticks">${ticks}</div><div class="cc-ring" id="ccRing" style="transform:rotate(${CANG}deg)">${ring}</div><div class="cc-hub"><small id="ccHubN">${idx+1} de ${N}</small><b id="ccHubT">${E(c.nome)}</b></div></div>`;
+ const N=cards.length,idx=cards.findIndex(c=>c.id==CSEL),c=cards[idx];
+ if(ccIdx()!==idx)CANG=-idx*CC_PASSO;
+ const cardsHTML=cards.map((k,i)=>`<button class="cc-card${i==idx?' on':''}" style="--bg:${CC_COR[i%CC_COR.length]}" data-cci="${i}" aria-label="${E(k.nome)}" aria-pressed="${i==idx}"><span class="cc-brand">${E(k.nome)}</span><span class="cc-meta">Fecha ${k.fecha} · vence ${k.venc}</span></button>`).join('');
+ const tks=Array.from({length:21},(_,k)=>`<span class="cc-tk"></span>`).join('');
+ const arc=`<div class="cc-arc" id="ccArc" tabindex="0" aria-label="Cartões: arraste para cima ou para baixo, ou use as setas">${cardsHTML}${tks}<button class="cc-go" data-on-click="h603" aria-label="Próximo cartão">›</button><span class="cc-count" id="ccHubN">${idx+1} de ${N}</span></div>`;
  const nav=`<div class="cc-nav"><button class="gh" data-on-click="h602" aria-label="Cartão anterior">‹</button><p class="note">arraste a roda</p><button class="gh" data-on-click="h603" aria-label="Próximo cartão">›</button></div>`;
  const compra=`<div class="card"><h2>Registrar compra neste cartão</h2><div class="row"><label class="fld">Cartão<select id="instCard">${cards.map(k=>`<option value="${E(k.id)}"${k.id==c.id?' selected':''}>${E(k.nome)}</option>`).join('')}</select></label><label class="fld w2">Descrição<input id="instDesc" placeholder="Ex.: compra de equipamento"></label><label class="fld">Data da compra<input id="instData" type="date" value="${T}"></label><label class="fld">Valor total<input id="instTotal" type="number" min="0.01" step="0.01" inputmode="decimal"></label><label class="fld">Parcelas<input id="instCount" type="number" min="1" step="1" value="1"></label><label class="fld">Categoria<select id="instCat">${opt('Outros')}</select></label><button class="pri" data-on-click="h25">Registrar</button></div><p id="instMsg" class="note" style="color:var(--wn)"></p><p class="note">Use 1 parcela para compra à vista no cartão. Pagar uma fatura baixa o saldo pelo total e lança cada compra em Gastos, na data de hoje.</p></div>`;
- return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><h2>Seus cartões</h2>${wheel}${nav}</div><details class="card cc-novo"><summary><b>Adicionar cartão</b></summary>${formNovo}</details></aside><div class="cc-main"><div id="ccDet">${ccDetHTML(c)}</div>${compra}</div></div>`;
+ return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><h2>Seus cartões</h2>${arc}${nav}</div><details class="card cc-novo"><summary><b>Adicionar cartão</b></summary>${formNovo}</details></aside><div class="cc-main"><div id="ccDet">${ccDetHTML(c)}</div>${compra}</div></div>`;
 }
 function calc(){
  const end=new Date(+Y,11,31),sm=sim(0,end),C=sm.C,D=sm.D;CALC={C,D};
@@ -1342,7 +1359,7 @@ function escrever(){if(!nOf()){const f=S.notas.filter(x=>!!x.del==!!NT.del).sort
 function render(){if(LOCKED)return lockScreen();const h=location.hash.slice(1),k=PG[h]?h:'geral',p=PG[k],nv=$('#nv');
  nv.innerHTML=navHtml(k);
  $('#m').innerHTML=`<header class="ph"><div class="top"><div class="crumb">Meu caixa<i>/</i><b>${p[0]}</b></div><div class="tw"><span class="dt">${new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'}).replace('.','')}</span><button class="eye" data-on-click="h160" aria-pressed="${!!S.priv}" aria-label="Ocultar ou mostrar valores" title="Ocultar valores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>${S.priv?'<path d="M4 4l16 16"/>':''}</svg></button></div></div><h1>${p[1]}</h1><p class="sub">${p[2]}</p></header>`+p[3]();
- const on=nv.querySelector('.on');if(on&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.offsetWidth/2;
+ const on=nv.querySelector('.on');if(on&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.offsetWidth/2;if(document.getElementById('ccArc'))ccPaint(true);
  if(k=='horizonte')hover();if(IMP&&$('#xb'))impSum();const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=getComputedStyle(document.body).backgroundColor;if(S.priv)privMask()}
 addEventListener('hashchange',()=>{fechaMais();render();scrollTo(0,0)});
 addEventListener('storage',async e=>{if(e.key!==K||!e.newValue)return;if(PEND!==null||SAVE_ERR){toast('Outra aba alterou seus dados, mas há alterações não salvas aqui. Salve ou baixe um backup antes de continuar.');return}try{const o=JSON.parse(e.newValue);if(o&&o.enc===1){if(LOCKED){ENV=o;return}if(!KEY)return hardLock(o);try{S=clean(JSON.parse(await openK(KEY,o)))}catch(x){return hardLock(o)}}else{if(LOCKED||KEY){KEY=null;VAULT=null;LOCKED=false;ENV=null;document.documentElement.classList.remove('locked');const l=$('#lock');if(l)l.remove()}S=clean(o)}norm();applyTheme();render()}catch(x){}});
@@ -1575,14 +1592,14 @@ hPasso:(el)=>{const k=el.dataset.k;if(k=='saldo')$('.sv input').focus();else loc
 })();
 </script>
 <script>
-document.addEventListener('pointerdown',e=>{const w=e.target.closest&&e.target.closest('#ccWheel');if(!w)return;CDRAG={id:e.pointerId,last:ccAng(e,w),moved:0,tap:e.target.closest('.cc-card')};try{w.setPointerCapture(e.pointerId)}catch(_){}});
-document.addEventListener('pointermove',e=>{if(!CDRAG||e.pointerId!==CDRAG.id)return;const w=document.getElementById('ccWheel');if(!w)return;const a=ccAng(e,w);let d=a-CDRAG.last;if(d>180)d-=360;if(d<-180)d+=360;CDRAG.last=a;CDRAG.moved+=Math.abs(d);CANG+=d;ccPaint(false);ccSync()});
-function ccFimArraste(e){if(!CDRAG||e.pointerId!==CDRAG.id)return;const D=CDRAG;CDRAG=null;const N=ccN();if(!N)return;if(D.moved<4&&D.tap){ccSnap(-(+D.tap.dataset.cci)*(360/N))}else{ccSnapNear()}}
+document.addEventListener('pointerdown',e=>{const w=e.target.closest&&e.target.closest('#ccArc');if(!w||e.target.closest('.cc-go'))return;CDRAG={id:e.pointerId,last:e.clientY,moved:0,tap:e.target.closest('.cc-card')};try{w.setPointerCapture(e.pointerId)}catch(_){}});
+document.addEventListener('pointermove',e=>{if(!CDRAG||e.pointerId!==CDRAG.id)return;const dy=e.clientY-CDRAG.last;CDRAG.last=e.clientY;CDRAG.moved+=Math.abs(dy);const N=ccN();CANG=Math.min(20,Math.max(-(N-1)*CC_PASSO-20,CANG+dy*0.6));ccPaint(false);ccSync()});
+function ccFimArraste(e){if(!CDRAG||e.pointerId!==CDRAG.id)return;const D=CDRAG;CDRAG=null;if(!ccN())return;if(D.moved<5&&D.tap){ccSnap(-(+D.tap.dataset.cci)*CC_PASSO)}else{ccSnapNear()}}
 document.addEventListener('pointerup',ccFimArraste);
 document.addEventListener('pointercancel',ccFimArraste);
-document.addEventListener('wheel',e=>{const w=e.target.closest&&e.target.closest('#ccWheel');if(!w)return;e.preventDefault();const N=ccN();if(!N)return;CANG+=(e.deltaY>0?-1:1)*(360/N)*0.5;ccPaint(false);ccSync();clearTimeout(CTIMER);CTIMER=setTimeout(ccSnapNear,160)},{passive:false});
-document.addEventListener('keydown',e=>{const w=document.getElementById('ccWheel');if(!w||document.activeElement!==w)return;if(e.key==='ArrowRight'){ccStep(1);e.preventDefault()}else if(e.key==='ArrowLeft'){ccStep(-1);e.preventDefault()}});
-function ccAng(e,w){const r=w.getBoundingClientRect();return Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI}
+document.addEventListener('wheel',e=>{const w=e.target.closest&&e.target.closest('#ccArc');if(!w)return;e.preventDefault();if(!ccN())return;CANG=Math.min(20,Math.max(-(ccN()-1)*CC_PASSO-20,CANG+(e.deltaY>0?-CC_PASSO*0.5:CC_PASSO*0.5)));ccPaint(false);ccSync();clearTimeout(CTIMER);CTIMER=setTimeout(ccSnapNear,160)},{passive:false});
+document.addEventListener('keydown',e=>{const w=document.getElementById('ccArc');if(!w||document.activeElement!==w)return;if(e.key==='ArrowRight'||e.key==='ArrowDown'){ccStep(1);e.preventDefault()}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){ccStep(-1);e.preventDefault()}});
+window.addEventListener('resize',()=>ccPaint(true));
 </script>
 </body>
 </html>
