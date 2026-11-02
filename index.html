@@ -96,7 +96,7 @@ main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
  main:has(.cc-wrap) .cc-wrap{display:flex;flex-direction:column;min-height:0}
  main:has(.cc-wrap) .cc-side{flex:1;min-height:0;display:flex;flex-direction:column}
  main:has(.cc-wrap) .cc-carrossel{flex:1;min-height:0;display:flex;flex-direction:column}
- main:has(.cc-wrap) .cc-detpage{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+ main:has(.cc-wrap) .cc-detpage{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:90px}
 }
 .cc-novo-top summary{cursor:pointer;list-style:none;display:inline-block;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.1);color:#eef0f5;font-weight:700;font-size:13px}
 .cc-novo-top[open] summary{margin-bottom:10px}
@@ -112,6 +112,7 @@ main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
 .cc-bigcard{position:relative;width:100%;aspect-ratio:1.6/1;max-height:200px;border-radius:22px;padding:18px 20px;color:#fff;background:var(--bg);box-shadow:0 18px 34px -14px rgba(0,0,0,.45);margin-bottom:14px;display:block}
 .cc-bigcard .cc-brand{display:block;font-weight:800;font-size:22px;line-height:1.2;overflow-wrap:anywhere}
 .cc-bigcard .cc-meta{position:absolute;left:20px;bottom:16px;font-size:13px;opacity:.9}
+.cc-bigcard .cc-num-big{position:absolute;left:20px;right:16px;bottom:44px;font-size:17px;letter-spacing:.08em;font-weight:600;opacity:.92;white-space:nowrap;overflow:hidden}
 .cc-detpage{display:grid;gap:16px;min-width:0;border-radius:22px;padding:12px;background:linear-gradient(180deg,var(--ca,#6d28d9) 0,color-mix(in srgb,var(--ca,#6d28d9) 28%,transparent) 320px,transparent 620px)}
 #ccDet{border-radius:22px;padding:12px;background:linear-gradient(180deg,var(--ca,#6d28d9) 0,color-mix(in srgb,var(--ca,#6d28d9) 28%,transparent) 320px,transparent 620px)}
 </style>
@@ -939,7 +940,7 @@ function faturas(){
  const compra=`<div class="card"><h2>Registrar compra neste cartão</h2><div class="row"><label class="fld">Cartão<select id="instCard">${cards.map(k=>`<option value="${E(k.id)}"${k.id==c.id?' selected':''}>${E(k.nome)}</option>`).join('')}</select></label><label class="fld w2">Descrição<input id="instDesc" placeholder="Ex.: compra de equipamento"></label><label class="fld">Data da compra<input id="instData" type="date" value="${T}"></label><label class="fld">Valor total<input id="instTotal" type="number" min="0.01" step="0.01" inputmode="decimal"></label><label class="fld">Parcelas<input id="instCount" type="number" min="1" step="1" value="1"></label><label class="fld">Categoria<select id="instCat">${opt('Outros')}</select></label><button class="pri" data-on-click="h25">Registrar</button></div><p id="instMsg" class="note" style="color:var(--wn)"></p><p class="note">Use 1 parcela para compra à vista no cartão. Pagar uma fatura baixa o saldo pelo total e lança cada compra em Gastos, na data de hoje.</p></div>`;
  const novo=`<details class="cc-novo-top"><summary>+ Adicionar</summary>${formNovo}</details>`;
  if(!ccPC()){
-  if(CVIEW=='detalhe')return `<div class="cc-detpage" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}"><button class="gh cc-back" data-on-click="h604">‹ Cartões</button><div class="cc-bigcard" style="--bg:${CC_COR[idx%CC_COR.length]}"><span class="cc-brand">${E(c.nome)}</span><span class="cc-meta">Fecha ${c.fecha} · vence ${c.venc}</span></div>${ccDetHTML(c)}${compra}</div>`;
+  if(CVIEW=='detalhe')return `<div class="cc-detpage" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}"><button class="gh cc-back" data-on-click="h604">‹ Cartões</button><div class="cc-bigcard" style="--bg:${CC_COR[idx%CC_COR.length]}"><span class="cc-brand">${E(c.nome)}</span><span class="cc-num-big">•••• •••• •••• ${["4821","0937","5360","2714","8806"][idx%5]}</span><span class="cc-meta">Fecha ${c.fecha} · vence ${c.venc}</span></div>${ccDetHTML(c)}${compra}</div>`;
   return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><div class="cc-top"><h2>Seus cartões</h2><div class="cc-acts">${novo}<button class="cc-open-top" data-on-click="h605">Abrir cartão ›</button></div></div>${arc}${nav}<button class="pri cc-ver" data-on-click="h605">Abrir cartão</button></div></aside></div>`;
  }
  return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><div class="cc-top"><h2>Seus cartões</h2>${novo}</div>${arc}${nav}</div></aside><div class="cc-main"><div id="ccDet" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}">${ccDetHTML(c)}</div>${compra}</div></div>`;
