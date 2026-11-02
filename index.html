@@ -51,7 +51,8 @@ html[data-ui] .card.cc-carrossel{background:linear-gradient(180deg,#1a1e2c,#1114
  .cc-wrap{grid-template-columns:minmax(340px,380px) minmax(0,1fr);align-items:stretch}
  .cc-side{display:flex;flex-direction:column;min-width:0}
  .cc-side .cc-carrossel{flex:1;display:flex;flex-direction:column}
- .cc-carrossel .cc-arc{flex:1;height:auto;min-height:460px}
+ main:has(.cc-wrap) .cc-carrossel .cc-arc{flex:1 1 0;height:auto;min-height:300px;max-height:520px}
+ main:has(.cc-wrap) .cc-side .cc-carrossel{justify-content:center}
 }
 
 /* Cartões: leque em arco com trilha e botão circular (referência) */
@@ -74,6 +75,7 @@ html[data-ui] .card.cc-carrossel{background:linear-gradient(180deg,#1a1e2c,#1114
 @media(min-width:900px){.cc-open-top{display:none}}
 /* Temas com moldura (Mono, Lime, Noir): o app ocupa a janela toda no computador */
 @media(min-width:761px){html[data-ui="mono"] body .app,html[data-ui="lime"] body .app,html[data-ui="noir"] body .app{width:100%;max-width:none;min-height:100vh;min-height:100dvh;margin:0;border-radius:0;box-shadow:none}html[data-ui="noir"] .side .brand{color:#f2f4ef}}
+@media(min-width:761px){:is(html[data-ui="mono"],html[data-ui="lime"],html[data-ui="noir"]) body main{max-width:1240px;margin-left:auto;margin-right:auto}}
 /* Cartões: tela fixa, sem rolagem da página (só as áreas internas rolam) */
 html:has(.cc-wrap){overflow:hidden}
 html:has(.cc-wrap) body .app{height:100vh;height:100dvh;box-sizing:border-box;width:100%;max-width:none;margin:0;border-radius:0;box-shadow:none;overflow:hidden}
@@ -82,6 +84,7 @@ main:has(.cc-wrap){display:flex;flex-direction:column;box-sizing:border-box;heig
 main:has(.cc-wrap) .cc-wrap{flex:1;min-height:0}
 main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:90px}
 main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
+
 .cc-arc{isolation:isolate;z-index:0}
 
 @media(min-width:900px){
