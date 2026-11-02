@@ -77,7 +77,7 @@ html:has(.cc-wrap){overflow:hidden}
 main:has(.cc-wrap){display:flex;flex-direction:column;box-sizing:border-box;height:100vh;height:100dvh;overflow:hidden}
 main:has(.cc-wrap) .cc-wrap{flex:1;min-height:0}
 main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain}
-main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:260px}
+main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
 @media(min-width:900px){
  main:has(.cc-wrap) .cc-wrap{align-items:stretch}
  main:has(.cc-wrap) .cc-side{min-height:0}
@@ -85,6 +85,8 @@ main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:260px}
  main:has(.cc-wrap) .cc-carrossel{min-height:0}
 }
 @media(max-width:899px){
+ .cc-top{flex-wrap:nowrap}.cc-top h2{white-space:nowrap;font-size:12px;letter-spacing:.06em}
+ .cc-acts{flex-wrap:nowrap;gap:6px}.cc-open-top,.cc-novo-top summary{padding:6px 10px;font-size:12px;white-space:nowrap}
  main:has(.cc-wrap) .cc-wrap{display:flex;flex-direction:column;min-height:0}
  main:has(.cc-wrap) .cc-side{flex:1;min-height:0;display:flex;flex-direction:column}
  main:has(.cc-wrap) .cc-carrossel{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -890,7 +892,7 @@ let CANG=0,CDRAG=null,CTIMER=null,CVIEW='lista';
 const ccPC=()=>window.matchMedia('(min-width:900px)').matches;const CC_PASSO=40;
 function ccN(){return S.cards.length}
 function ccIdx(){const N=ccN();if(!N)return 0;return Math.min(N-1,Math.max(0,Math.round(-CANG/CC_PASSO)))}
-function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;st.classList.toggle('drag',!anim);const W=st.clientWidth||320,H=st.clientHeight||300;const cw=Math.max(130,Math.min(W*0.62,240)),ch=cw/1.6,R=Math.max(120,Math.min(W*0.6,260)),cx=Math.min(cw/2+6,W-24-R-cw/2),cy=H/2,Rt=R+cw/2+16;st.style.setProperty('--cw',cw+'px');st.style.setProperty('--ch',ch+'px');
+function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;st.classList.toggle('drag',!anim);const W=st.clientWidth||320,H=st.clientHeight||300;const cw=Math.max(130,Math.min(W*0.62,240)),ch=cw/1.6,R=Math.max(90,Math.min(W*0.6,260,(H/2-ch/2)/0.9)),cx=Math.min(cw/2+6,W-24-R-cw/2),cy=H/2,Rt=R+cw/2+16;st.style.setProperty('--cw',cw+'px');st.style.setProperty('--ch',ch+'px');
  st.querySelectorAll('.cc-card').forEach(b=>{const i=+b.dataset.cci,ang=(i*CC_PASSO+CANG)*Math.PI/180,x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang),ad=Math.abs(ang*180/Math.PI),vis=ad<=64,k=Math.min(ad/CC_PASSO,2);b.style.left=(x-cw/2)+'px';b.style.top=(y-ch/2)+'px';b.style.transform='scale('+(1-0.07*k)+')';b.style.opacity=vis?String(Math.max(0,1-ad/110)):'0';b.style.zIndex=String(100-Math.round(ad));b.style.pointerEvents=vis?'auto':'none'});
  st.querySelectorAll('.cc-tk').forEach((t,k)=>{const bb=(k-10)*8*Math.PI/180;t.style.left=(cx+Rt*Math.cos(bb)-2)+'px';t.style.top=(cy+Rt*Math.sin(bb)-2)+'px'});
  const go=st.querySelector('.cc-go');if(go){go.style.left=(cx+Rt-22)+'px';go.style.top=(cy-22)+'px'}
