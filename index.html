@@ -64,6 +64,16 @@
 .cc-go{position:absolute;width:44px;height:44px;min-width:44px;min-height:44px;border-radius:50%;border:0;padding:0;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:22px;line-height:1;box-shadow:0 10px 22px -8px rgba(124,58,237,.8);cursor:pointer}
 .cc-count{position:absolute;left:14px;bottom:12px;font-size:12px;color:#9aa3b2}
 .card.cc-carrossel .cc-nav{justify-content:flex-start}
+
+/* Cartões no celular: duas telas (lista de cartões -> detalhe) */
+.cc-ver{width:100%;margin-top:10px}
+.card.cc-carrossel .cc-ver{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}
+.cc-back{margin:0 0 12px;padding:8px 14px;min-height:40px}
+.cc-bigcard{position:relative;width:100%;aspect-ratio:1.6/1;max-height:200px;border-radius:22px;padding:18px 20px;color:#fff;background:var(--bg);box-shadow:0 18px 34px -14px rgba(0,0,0,.45);margin-bottom:14px;display:block}
+.cc-bigcard .cc-brand{display:block;font-weight:800;font-size:22px;line-height:1.2;overflow-wrap:anywhere}
+.cc-bigcard .cc-meta{position:absolute;left:20px;bottom:16px;font-size:13px;opacity:.9}
+.cc-detpage{display:grid;gap:16px;min-width:0;border-radius:22px;padding:12px;background:linear-gradient(180deg,var(--ca,#6d28d9) 0,color-mix(in srgb,var(--ca,#6d28d9) 28%,transparent) 320px,transparent 620px)}
+#ccDet{border-radius:22px;padding:12px;background:linear-gradient(180deg,var(--ca,#6d28d9) 0,color-mix(in srgb,var(--ca,#6d28d9) 28%,transparent) 320px,transparent 620px)}
 </style>
 <script>try{var K0='gf-azim-v1',o=JSON.parse(localStorage.getItem(K0)||'{}'),h=document.documentElement,c=localStorage.getItem(K0+'-css');if(c)h.style.cssText=c;if(o.enc)h.classList.add('locked');h.dataset.ui=o.ui||'neo';h.dataset.theme=o.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'escuro':'hibrido');if(o.aj){if(o.aj.dest===0)h.classList.add('nodest');if(o.aj.mov===0)h.classList.add('nomov')}}catch(e){}</script>
 <style>
@@ -842,8 +852,10 @@ function contas(){const op=opens(dPlus(60)),tot=op.reduce((a,o)=>a+o.b.valor,0),
  <div class="card"><h2>Cadastradas</h2>${S.bills.map(b=>BD==b.id?`<div class="li"><div>Apagar “${E(b.nome)}”?<small>Remove a conta e os vencimentos futuros. Pagamentos já registrados continuam em Gastos.</small></div><div class="rt"><button class="gh" data-on-click="h19">Cancelar</button><button class="pri" style="background:var(--wn)" data-on-click="h20" data-p20_1="${E(b.id)}">Apagar</button></div></div>`:`<div class="li"><div>${E(b.nome)}${BE==b.id?' <span class="tag">editando</span>':''}<small>${b.rec?'todo dia '+b.data.slice(8)+', todo mês'+(b.fim?' até '+fd(b.fim):' sem data final'):'única, '+fd(b.data)} · ${E(b.cat)}</small></div><div class="rt">${R(b.valor)}<button class="gh" data-on-click="h21" data-p21_1="${E(b.id)}">Editar</button><button class="x" aria-label="Excluir conta" data-on-click="h22" data-p22_1="${E(b.id)}">×</button></div></div>`).join('')||'<div class="empty">Ainda sem contas cadastradas.</div>'}<p class="note">Ao marcar “Paguei”, o valor sai do saldo e entra nos gastos da categoria. As faturas dos cartões aparecem aqui automaticamente, na data de vencimento.</p></div>`}
 
 let CSEL=null;
+const CC_SOLID=['#6d28d9','#ea580c','#0f766e','#1d4ed8','#be123c'];
 const CC_COR=['linear-gradient(135deg,#6d28d9,#a78bfa)','linear-gradient(135deg,#ea580c,#fbbf24)','linear-gradient(135deg,#0f766e,#34d399)','linear-gradient(135deg,#1d4ed8,#60a5fa)','linear-gradient(135deg,#be123c,#fb7185)'];
-let CANG=0,CDRAG=null,CTIMER=null;const CC_PASSO=40;
+let CANG=0,CDRAG=null,CTIMER=null,CVIEW='lista';
+const ccPC=()=>window.matchMedia('(min-width:900px)').matches;const CC_PASSO=40;
 function ccN(){return S.cards.length}
 function ccIdx(){const N=ccN();if(!N)return 0;return Math.min(N-1,Math.max(0,Math.round(-CANG/CC_PASSO)))}
 function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;st.classList.toggle('drag',!anim);const W=st.clientWidth||320,H=st.clientHeight||300;const cw=Math.max(120,Math.min(W*0.47,170)),ch=cw/1.6,R=Math.max(110,Math.min(W*0.44,190)),cx=Math.min(cw/2+6,W-24-R-cw/2),cy=H/2,Rt=R+cw/2+16;st.style.setProperty('--cw',cw+'px');st.style.setProperty('--ch',ch+'px');
@@ -881,7 +893,12 @@ function faturas(){
  const arc=`<div class="cc-arc" id="ccArc" tabindex="0" aria-label="Cartões: arraste para cima ou para baixo, ou use as setas">${cardsHTML}${tks}<button class="cc-go" data-on-click="h603" aria-label="Próximo cartão">›</button><span class="cc-count" id="ccHubN">${idx+1} de ${N}</span></div>`;
  const nav=`<div class="cc-nav"><button class="gh" data-on-click="h602" aria-label="Cartão anterior">‹</button><p class="note">arraste a roda</p><button class="gh" data-on-click="h603" aria-label="Próximo cartão">›</button></div>`;
  const compra=`<div class="card"><h2>Registrar compra neste cartão</h2><div class="row"><label class="fld">Cartão<select id="instCard">${cards.map(k=>`<option value="${E(k.id)}"${k.id==c.id?' selected':''}>${E(k.nome)}</option>`).join('')}</select></label><label class="fld w2">Descrição<input id="instDesc" placeholder="Ex.: compra de equipamento"></label><label class="fld">Data da compra<input id="instData" type="date" value="${T}"></label><label class="fld">Valor total<input id="instTotal" type="number" min="0.01" step="0.01" inputmode="decimal"></label><label class="fld">Parcelas<input id="instCount" type="number" min="1" step="1" value="1"></label><label class="fld">Categoria<select id="instCat">${opt('Outros')}</select></label><button class="pri" data-on-click="h25">Registrar</button></div><p id="instMsg" class="note" style="color:var(--wn)"></p><p class="note">Use 1 parcela para compra à vista no cartão. Pagar uma fatura baixa o saldo pelo total e lança cada compra em Gastos, na data de hoje.</p></div>`;
- return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><h2>Seus cartões</h2>${arc}${nav}</div><details class="card cc-novo"><summary><b>Adicionar cartão</b></summary>${formNovo}</details></aside><div class="cc-main"><div id="ccDet">${ccDetHTML(c)}</div>${compra}</div></div>`;
+ const novo=`<details class="card cc-novo"><summary><b>Adicionar cartão</b></summary>${formNovo}</details>`;
+ if(!ccPC()){
+  if(CVIEW=='detalhe')return `<div class="cc-detpage" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}"><button class="gh cc-back" data-on-click="h604">‹ Cartões</button><div class="cc-bigcard" style="--bg:${CC_COR[idx%CC_COR.length]}"><span class="cc-brand">${E(c.nome)}</span><span class="cc-meta">Fecha ${c.fecha} · vence ${c.venc}</span></div>${ccDetHTML(c)}${compra}</div>`;
+  return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><h2>Seus cartões</h2>${arc}${nav}<button class="pri cc-ver" data-on-click="h605">Abrir cartão</button></div>${novo}</aside></div>`;
+ }
+ return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><h2>Seus cartões</h2>${arc}${nav}</div>${novo}</aside><div class="cc-main"><div id="ccDet" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}">${ccDetHTML(c)}</div>${compra}</div></div>`;
 }
 function calc(){
  const end=new Date(+Y,11,31),sm=sim(0,end),C=sm.C,D=sm.D;CALC={C,D};
@@ -1440,6 +1457,8 @@ h22:(el,ev)=>{askDel(el.dataset.p22_1)},
 h23:(el,ev)=>{const id=el.dataset.p23_1;if(cartaoTemParcelas(id)){toast('Este cartão tem parcelamentos lançados. Exclua os parcelamentos dele antes de remover o cartão.');return}BDC=id;render()},
 h601:(el,ev)=>{CSEL=el.dataset.p601_1;render()},
 h602:(el,ev)=>{ccStep(-1)},
+h604:(el,ev)=>{CVIEW='lista';render()},
+h605:(el,ev)=>{CVIEW='detalhe';render()},
 h603:(el,ev)=>{ccStep(1)},
 h400:(el,ev)=>{BDC=null;render()},
 h401:(el,ev)=>{delCard(el.dataset.p401_1)},
@@ -1594,7 +1613,7 @@ hPasso:(el)=>{const k=el.dataset.k;if(k=='saldo')$('.sv input').focus();else loc
 <script>
 document.addEventListener('pointerdown',e=>{const w=e.target.closest&&e.target.closest('#ccArc');if(!w||e.target.closest('.cc-go'))return;CDRAG={id:e.pointerId,last:e.clientY,moved:0,tap:e.target.closest('.cc-card')};try{w.setPointerCapture(e.pointerId)}catch(_){}});
 document.addEventListener('pointermove',e=>{if(!CDRAG||e.pointerId!==CDRAG.id)return;const dy=e.clientY-CDRAG.last;CDRAG.last=e.clientY;CDRAG.moved+=Math.abs(dy);const N=ccN();CANG=Math.min(20,Math.max(-(N-1)*CC_PASSO-20,CANG+dy*0.6));ccPaint(false);ccSync()});
-function ccFimArraste(e){if(!CDRAG||e.pointerId!==CDRAG.id)return;const D=CDRAG;CDRAG=null;if(!ccN())return;if(D.moved<5&&D.tap){ccSnap(-(+D.tap.dataset.cci)*CC_PASSO)}else{ccSnapNear()}}
+function ccFimArraste(e){if(!CDRAG||e.pointerId!==CDRAG.id)return;const D=CDRAG;CDRAG=null;if(!ccN())return;if(D.moved<5&&D.tap){const ti=+D.tap.dataset.cci;if(!ccPC()&&ti===ccIdx()){CVIEW='detalhe';render()}else ccSnap(-ti*CC_PASSO)}else{ccSnapNear()}}
 document.addEventListener('pointerup',ccFimArraste);
 document.addEventListener('pointercancel',ccFimArraste);
 document.addEventListener('wheel',e=>{const w=e.target.closest&&e.target.closest('#ccArc');if(!w)return;e.preventDefault();if(!ccN())return;CANG=Math.min(20,Math.max(-(ccN()-1)*CC_PASSO-20,CANG+(e.deltaY>0?-CC_PASSO*0.5:CC_PASSO*0.5)));ccPaint(false);ccSync();clearTimeout(CTIMER);CTIMER=setTimeout(ccSnapNear,160)},{passive:false});
