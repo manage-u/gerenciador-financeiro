@@ -72,6 +72,24 @@
 .cc-novo-top{margin:0}.cc-novo-top[open]{flex:1 1 100%}
 .cc-open-top{border:0;border-radius:999px;padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
 @media(min-width:900px){.cc-open-top{display:none}}
+/* Cartões: tela fixa, sem rolagem da página (só as áreas internas rolam) */
+html:has(.cc-wrap){overflow:hidden}
+main:has(.cc-wrap){display:flex;flex-direction:column;box-sizing:border-box;height:100vh;height:100dvh;overflow:hidden}
+main:has(.cc-wrap) .cc-wrap{flex:1;min-height:0}
+main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:260px}
+@media(min-width:900px){
+ main:has(.cc-wrap) .cc-wrap{align-items:stretch}
+ main:has(.cc-wrap) .cc-side{min-height:0}
+ html:has(.cc-wrap) nav.side{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}
+ main:has(.cc-wrap) .cc-carrossel{min-height:0}
+}
+@media(max-width:899px){
+ main:has(.cc-wrap) .cc-wrap{display:flex;flex-direction:column;min-height:0}
+ main:has(.cc-wrap) .cc-side{flex:1;min-height:0;display:flex;flex-direction:column}
+ main:has(.cc-wrap) .cc-carrossel{flex:1;min-height:0;display:flex;flex-direction:column}
+ main:has(.cc-wrap) .cc-detpage{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+}
 .cc-novo-top summary{cursor:pointer;list-style:none;display:inline-block;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.1);color:#eef0f5;font-weight:700;font-size:13px}
 .cc-novo-top[open] summary{margin-bottom:10px}
 .cc-novo-top summary::-webkit-details-marker{display:none}
