@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Gerenciador financeiro</title>
 <meta name="theme-color" content="#ece3d4">
 <link rel="manifest" href="manifest.webmanifest">
@@ -146,7 +146,7 @@ details[open] summary{color:var(--ac)}
 nav.side{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));top:auto;margin:0;padding:8px;border-radius:20px;z-index:5}
 .brand,.ng{display:none}
 #nv{display:flex;gap:4px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}#nv::-webkit-scrollbar{display:none}
-#nv button{flex-direction:column;gap:3px;width:auto;min-width:68px;padding:8px;font-size:11px;margin:0;scroll-snap-align:start;white-space:nowrap}
+#nv button{flex:1 1 0;flex-direction:column;gap:3px;width:auto;min-width:0;padding:8px 4px;font-size:11px;margin:0;scroll-snap-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 main{padding:20px 16px 120px}.two{grid-template-columns:1fr}h1{font-size:25px}
 .cal{gap:4px}.dc{min-height:62px;padding:5px 6px;border-radius:10px}.dc b{font-size:11px}.stats{gap:14px}.card{padding:18px}
 }
@@ -449,7 +449,7 @@ const CC=['#2f6690','#1d6b57','#c58b2a','#a65a8a','#c4553d','#5a6fb0','#7a8f3a',
 const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],WD=['dom','seg','ter','qua','qui','sex','sáb'];
 const MESL=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const RT={salario:'Salário',vale:'Vale-alimentação',bonus:'Bônus',outro:'Outras entradas'};
-const K='gf-azim-v1',VER='0.18';
+const K='gf-azim-v1',VER='0.18.1';
 var UPDN=null; // novidades da versão pendente (vêm do service worker novo)
 const UPD={reg:null,aceito:false};
 const DT=[['cheque','Cheque especial'],['rotativo','Rotativo do cartão'],['emprestimo','Empréstimo pessoal'],['financ','Financiamento'],['parcelado','Compra parcelada com juros'],['outra','Outra']];
@@ -959,7 +959,7 @@ PG.config=['Ajustes','Ajustes e aparência','Temas, cores, relevo, categorias e 
 PG.sobre=['Sobre','Versões, créditos e dados','Versões do app, créditos das bibliotecas usadas e como seus dados são tratados.',sobre];
 let SB={tab:'versoes'};
 const VERS=[
- {v:'0.18',st:'Em revisão (candidata)',itens:['Cópia automática dos dados uma vez por dia, com as 5 últimas guardadas em Dados e privacidade','Cópia de segurança antes de apagar tudo e antes de restaurar um backup','Aviso antes de restaurar um backup de versão mais nova, com a opção de continuar','Lista de cópias automáticas com botão de restaurar cada uma','Com senha, as cópias automáticas ficam criptografadas']},
+ {v:'0.18.1',st:'Em revisão (candidata)',itens:['Barra inferior ocupa a largura da tela, mesmo com texto maior','Zoom por pinça desativado, para a tela não sair do lugar no celular'],},{v:'0.18',st:'Versão anterior',itens:['Cópia automática dos dados uma vez por dia, com as 5 últimas guardadas em Dados e privacidade','Cópia de segurança antes de apagar tudo e antes de restaurar um backup','Aviso antes de restaurar um backup de versão mais nova, com a opção de continuar','Lista de cópias automáticas com botão de restaurar cada uma','Com senha, as cópias automáticas ficam criptografadas']},
  {v:'0.17',st:'Versão anterior',itens:['Zona de perigo em Ajustes: Apagar tudo só libera ao digitar APAGAR, com aviso sobre o endereço compartilhado com outros apps','Atualização com escolha: a nova versão só entra quando você clica em "Atualizar agora"','Aviso com as principais novidades, "Atualizar agora", "Ver novidades" e "Depois"','Botão "Verificar atualização" em Sistema > Sobre > Versões','Página principal abre do cache até a atualização ser aceita','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Seus dados e backups são os mesmos nas duas versões']},
  {v:'0.16',st:'Versão anterior',itens:['Tela Sobre: versões, créditos, dados e privacidade','Limites de PDF: 10 MB, 100 páginas, 30 s e 50 mil linhas, com mensagens claras','PDF sem internet: o CMap usado pelos bancos fica guardado no aparelho','Fontes locais (sem Google Fonts)','SHA256SUMS.txt para conferir a integridade dos arquivos','Modo privacidade oculta só valores em R$ e campos de dinheiro (temas, taxas e ajustes continuam visíveis)','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Padrões sem informações pessoais (categorias e exemplo de cartões genéricos)']},
  {v:'0.15',st:'Versão anterior',itens:['Excluir cartão pede confirmação; cartão com parcelamentos não pode ser excluído','Compra parcelada com 0 parcelas é recusada','Colar no editor de notas mantém negrito, itálico e links (com sanitização)','Restauração e desfazer transacionais','Limites para backups: 20 MB, texto e quantidade de registros','Criptografia: ativar, trocar e desativar senha de forma transacional','Service worker: pré-cache do leitor de PDF']},
