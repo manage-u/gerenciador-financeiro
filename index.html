@@ -48,8 +48,10 @@
 .cc-form{margin-top:12px}
 .cc-det .stats{margin:12px 0 0}
 @media(min-width:900px){
- .cc-wrap{grid-template-columns:minmax(340px,380px) minmax(0,1fr);align-items:start}
- .cc-side{position:sticky;top:16px}
+ .cc-wrap{grid-template-columns:minmax(340px,380px) minmax(0,1fr);align-items:stretch}
+ .cc-side{display:flex;flex-direction:column;min-width:0}
+ .cc-side .cc-carrossel{flex:1;display:flex;flex-direction:column}
+ .cc-carrossel .cc-arc{flex:1;height:auto;min-height:460px}
 }
 
 /* Cartões: leque em arco com trilha e botão circular (referência) */
@@ -477,7 +479,7 @@ html[data-ui="lime"] .hd,html[data-ui="mono"] .hd,html[data-ui="noir"] .hd{backg
  html:is([data-ui="neo"],[data-ui="mono"]) #nv button{justify-content:center;padding:12px 0}
  html:is([data-ui="neo"],[data-ui="mono"]) #nv button span{display:none}
 }
-@media(min-width:1280px){html[data-ui="neo"] main{max-width:1180px}}
+@media(min-width:1280px){html[data-ui="neo"] main{max-width:1180px}html[data-ui="neo"] main:has(.cc-wrap){max-width:1640px}}
 .wr{display:grid;grid-template-columns:240px minmax(0,1fr) 270px;gap:20px;align-items:start}.wr>.card{margin:0}.wr .wide{grid-column:2/-1}
 .nlist{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-height:62vh;overflow:auto;padding:4px 6px 10px}
 .ni{text-align:left;background:var(--bg);border:0;border-radius:var(--r3);padding:10px 12px;color:var(--ink);box-shadow:var(--raise-s);display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -872,7 +874,7 @@ function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;s
  st.querySelectorAll('.cc-tk').forEach((t,k)=>{const bb=(k-10)*8*Math.PI/180;t.style.left=(cx+Rt*Math.cos(bb)-2)+'px';t.style.top=(cy+Rt*Math.sin(bb)-2)+'px'});
  const go=st.querySelector('.cc-go');if(go){go.style.left=(cx+Rt-22)+'px';go.style.top=(cy-22)+'px'}
 }
-function ccSync(){const N=ccN();if(!N)return;const i=ccIdx(),c=S.cards[i];const hn=document.getElementById('ccHubN');if(hn)hn.textContent=(i+1)+' de '+N;document.querySelectorAll('#ccArc .cc-card').forEach(b=>{const on=+b.dataset.cci===i;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});if(CSEL!==c.id){CSEL=c.id;const d=document.getElementById('ccDet');if(d)d.innerHTML=ccDetHTML(c)}}
+function ccSync(){const N=ccN();if(!N)return;const i=ccIdx(),c=S.cards[i];const hn=document.getElementById('ccHubN');if(hn)hn.textContent=(i+1)+' de '+N;document.querySelectorAll('#ccArc .cc-card').forEach(b=>{const on=+b.dataset.cci===i;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});if(CSEL!==c.id){CSEL=c.id;const d=document.getElementById('ccDet');if(d)d.innerHTML=ccDetHTML(c)}const dd=document.getElementById('ccDet');if(dd)dd.style.setProperty('--ca',CC_SOLID[i%CC_SOLID.length]);}
 function ccSnap(t){const N=ccN();if(!N)return;CANG=Math.min(0,Math.max(-(N-1)*CC_PASSO,t));ccPaint(true);ccSync()}
 function ccStep(d){const N=ccN();if(!N)return;ccSnap(-Math.min(N-1,Math.max(0,ccIdx()+d))*CC_PASSO)}
 function ccSnapNear(){ccSnap(-ccIdx()*CC_PASSO)}
