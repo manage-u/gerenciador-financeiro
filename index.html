@@ -74,10 +74,11 @@ html[data-ui] .card.cc-carrossel{background:linear-gradient(180deg,#1a1e2c,#1114
 @media(min-width:900px){.cc-open-top{display:none}}
 /* Cartões: tela fixa, sem rolagem da página (só as áreas internas rolam) */
 html:has(.cc-wrap){overflow:hidden}
-html:has(.cc-wrap) body .app{height:100vh;height:100dvh;box-sizing:border-box;margin-top:0;margin-bottom:0;overflow:hidden}
+html:has(.cc-wrap) body .app{height:100vh;height:100dvh;box-sizing:border-box;width:100%;max-width:none;margin:0;border-radius:0;box-shadow:none;overflow:hidden}
+html:has(.cc-wrap) body{background:var(--bg)}
 main:has(.cc-wrap){display:flex;flex-direction:column;box-sizing:border-box;height:100%;overflow:hidden}
 main:has(.cc-wrap) .cc-wrap{flex:1;min-height:0}
-main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:90px}
 main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
 .cc-arc{isolation:isolate;z-index:0}
 
