@@ -29,7 +29,9 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 #toast.show{opacity:1;transform:translate(-50%,0)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
+html,body{touch-action:pan-x pan-y;overscroll-behavior-x:none}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;font-variant-numeric:tabular-nums}
+.stats .st{min-width:0}.stats .st b,.stats .st small{overflow-wrap:anywhere}
 .app{display:grid;grid-template-columns:240px 1fr;gap:8px}
 nav.side{margin:20px 0 20px 20px;padding:22px 12px 14px;position:sticky;top:20px;align-self:start;border-radius:var(--r5);box-shadow:var(--raise);background:linear-gradient(145deg,var(--gl),transparent 60%),var(--bg)}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:17px;letter-spacing:-.01em;margin:0 8px 14px}
@@ -449,7 +451,7 @@ const CC=['#2f6690','#1d6b57','#c58b2a','#a65a8a','#c4553d','#5a6fb0','#7a8f3a',
 const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],WD=['dom','seg','ter','qua','qui','sex','sáb'];
 const MESL=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const RT={salario:'Salário',vale:'Vale-alimentação',bonus:'Bônus',outro:'Outras entradas'};
-const K='gf-azim-v1',VER='0.18.1';
+const K='gf-azim-v1',VER='0.18.2';
 var UPDN=null; // novidades da versão pendente (vêm do service worker novo)
 const UPD={reg:null,aceito:false};
 const DT=[['cheque','Cheque especial'],['rotativo','Rotativo do cartão'],['emprestimo','Empréstimo pessoal'],['financ','Financiamento'],['parcelado','Compra parcelada com juros'],['outra','Outra']];
@@ -959,7 +961,7 @@ PG.config=['Ajustes','Ajustes e aparência','Temas, cores, relevo, categorias e 
 PG.sobre=['Sobre','Versões, créditos e dados','Versões do app, créditos das bibliotecas usadas e como seus dados são tratados.',sobre];
 let SB={tab:'versoes'};
 const VERS=[
- {v:'0.18.1',st:'Em revisão (candidata)',itens:['Barra inferior ocupa a largura da tela, mesmo com texto maior','Zoom por pinça desativado, para a tela não sair do lugar no celular'],},{v:'0.18',st:'Versão anterior',itens:['Cópia automática dos dados uma vez por dia, com as 5 últimas guardadas em Dados e privacidade','Cópia de segurança antes de apagar tudo e antes de restaurar um backup','Aviso antes de restaurar um backup de versão mais nova, com a opção de continuar','Lista de cópias automáticas com botão de restaurar cada uma','Com senha, as cópias automáticas ficam criptografadas']},
+ {v:'0.18.2',st:'Em revisão (candidata)',itens:['Pinça de zoom bloqueada também no Chrome do Android','Textos e números longos quebram linha em vez de sair da tela'],},{v:'0.18.1',st:'Versão anterior',itens:['Barra inferior ocupa a largura da tela, mesmo com texto maior','Zoom por pinça desativado, para a tela não sair do lugar no celular'],},{v:'0.18',st:'Versão anterior',itens:['Cópia automática dos dados uma vez por dia, com as 5 últimas guardadas em Dados e privacidade','Cópia de segurança antes de apagar tudo e antes de restaurar um backup','Aviso antes de restaurar um backup de versão mais nova, com a opção de continuar','Lista de cópias automáticas com botão de restaurar cada uma','Com senha, as cópias automáticas ficam criptografadas']},
  {v:'0.17',st:'Versão anterior',itens:['Zona de perigo em Ajustes: Apagar tudo só libera ao digitar APAGAR, com aviso sobre o endereço compartilhado com outros apps','Atualização com escolha: a nova versão só entra quando você clica em "Atualizar agora"','Aviso com as principais novidades, "Atualizar agora", "Ver novidades" e "Depois"','Botão "Verificar atualização" em Sistema > Sobre > Versões','Página principal abre do cache até a atualização ser aceita','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Seus dados e backups são os mesmos nas duas versões']},
  {v:'0.16',st:'Versão anterior',itens:['Tela Sobre: versões, créditos, dados e privacidade','Limites de PDF: 10 MB, 100 páginas, 30 s e 50 mil linhas, com mensagens claras','PDF sem internet: o CMap usado pelos bancos fica guardado no aparelho','Fontes locais (sem Google Fonts)','SHA256SUMS.txt para conferir a integridade dos arquivos','Modo privacidade oculta só valores em R$ e campos de dinheiro (temas, taxas e ajustes continuam visíveis)','Cores personalizadas valem em todos os estilos: Neo, Mono, Lime e Noir','Imagem de referência vira cores do estilo escolhido','Padrões sem informações pessoais (categorias e exemplo de cartões genéricos)']},
  {v:'0.15',st:'Versão anterior',itens:['Excluir cartão pede confirmação; cartão com parcelamentos não pode ser excluído','Compra parcelada com 0 parcelas é recusada','Colar no editor de notas mantém negrito, itálico e links (com sanitização)','Restauração e desfazer transacionais','Limites para backups: 20 MB, texto e quantidade de registros','Criptografia: ativar, trocar e desativar senha de forma transacional','Service worker: pré-cache do leitor de PDF']},
