@@ -78,6 +78,8 @@ main:has(.cc-wrap){display:flex;flex-direction:column;box-sizing:border-box;heig
 main:has(.cc-wrap) .cc-wrap{flex:1;min-height:0}
 main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain}
 main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
+.cc-arc{isolation:isolate;z-index:0}
+
 @media(min-width:900px){
  main:has(.cc-wrap) .cc-wrap{align-items:stretch}
  main:has(.cc-wrap) .cc-side{min-height:0}
