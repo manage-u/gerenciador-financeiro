@@ -52,7 +52,7 @@ html[data-ui] .card.cc-carrossel{background:linear-gradient(180deg,#1a1e2c,#1114
  .cc-side{display:flex;flex-direction:column;min-width:0}
  .cc-side .cc-carrossel{flex:1;display:flex;flex-direction:column}
  main:has(.cc-wrap) .cc-carrossel .cc-arc{flex:1 1 0;height:auto;min-height:300px;max-height:520px}
- main:has(.cc-wrap) .cc-side .cc-carrossel{justify-content:center}
+ main:has(.cc-wrap) .cc-side .cc-carrossel{justify-content:center;margin-bottom:0}
 }
 
 /* Cartões: leque em arco com trilha e botão circular (referência) */
@@ -96,7 +96,7 @@ html:has(.cc-wrap) body .app{height:100vh;height:100dvh;box-sizing:border-box;wi
 html:has(.cc-wrap) body{background:var(--bg)}
 main:has(.cc-wrap){display:flex;flex-direction:column;box-sizing:border-box;height:100%;overflow:hidden}
 main:has(.cc-wrap) .cc-wrap{flex:1;min-height:0}
-main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:90px}
+main:has(.cc-wrap) .cc-main{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 8px 90px;margin:-8px -8px 0}
 main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
 
 .cc-arc{isolation:isolate;z-index:0}
@@ -208,6 +208,7 @@ button:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
 .pri:hover{transform:translateY(-1px)}
 .pri:active{transform:none;box-shadow:inset 3px 3px 7px rgba(0,0,0,.4),inset -2px -2px 5px rgba(255,255,255,.12)}
 .gh{background:var(--bg);border:0;color:var(--ink);border-radius:var(--r3);padding:8px 14px;font-weight:700;font-size:13px;box-shadow:var(--raise-s)}
+.ver-mais{margin:0 0 12px}.ver-mais summary{list-style:none;display:inline-block;cursor:pointer;margin:0 0 12px}.ver-mais summary::-webkit-details-marker{display:none}
 .gh:hover{color:var(--ac)}.gh:active{box-shadow:var(--inset-s)}
 .x{background:none;border:0;color:var(--mu);font-size:18px;line-height:1;padding:4px 9px;border-radius:var(--r2)}
 .x:hover{color:var(--wn);box-shadow:var(--raise-s)}
@@ -230,7 +231,7 @@ button:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
 .cr b{text-align:right}
 .tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 12px;border-radius:99px;background:var(--ac);color:var(--ai);box-shadow:var(--raise-s)}
 .tag.w{background:transparent;color:var(--wn);box-shadow:inset 0 0 0 1.5px var(--wn)}
-.hero{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
+.hero{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;align-content:space-between;margin-bottom:4px}
 .hero b{font-size:32px;letter-spacing:-.03em}
 .lg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--mu);margin-bottom:14px;padding:10px 16px;border-radius:var(--r3);box-shadow:var(--inset-s);min-height:44px;align-items:center}
 .lg span{display:inline-flex;align-items:center;gap:6px}.lg b{color:var(--ink)}.lg i{width:10px;height:10px;border-radius:50%}
@@ -275,7 +276,7 @@ nav.side{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-in
 .brand,.ng{display:none}
 #nv{display:flex;gap:4px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}#nv::-webkit-scrollbar{display:none}
 #nv button{flex:1 1 0;flex-direction:column;gap:3px;width:auto;min-width:0;padding:8px 4px;font-size:11px;margin:0;scroll-snap-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-main{padding:20px 16px 120px}.two{grid-template-columns:1fr}h1{font-size:25px}
+main{padding:20px 16px 160px}.two{grid-template-columns:1fr}h1{font-size:25px}
 .cal{gap:4px}.dc{min-height:62px;padding:5px 6px;border-radius:10px}.dc b{font-size:11px}.stats{gap:14px}.card{padding:18px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -410,7 +411,8 @@ html[data-ui="noir"] input[type=checkbox]:checked{background-image:url("data:ima
 @media(max-width:900px){.hm{grid-template-columns:1fr!important;grid-template-areas:none!important}.hm>*{grid-area:auto!important}}
 .hero{padding:26px 28px}.hero small{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
 .hero .big{font-size:clamp(34px,5vw,54px);font-weight:700;letter-spacing:-.04em;margin:6px 0 14px;line-height:1.05}
-.sv2{display:flex;gap:12px;flex-wrap:wrap}.sv{display:block;flex:1;min-width:140px;padding:10px 14px;border-radius:var(--r3);background:rgba(127,127,127,.14);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.sv2{display:flex;gap:12px;flex-wrap:wrap}
+.hero .sv2{flex:1 1 100%;width:100%}.sv{display:block;flex:1;min-width:140px;padding:10px 14px;border-radius:var(--r3);background:rgba(127,127,127,.14);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .sv input{display:block;border:0;background:none;box-shadow:none;color:inherit;font-size:20px;font-weight:700;padding:2px 0;margin:2px 0 0;width:100%;letter-spacing:-.02em}
 .hn{font-size:12.5px;opacity:.75;margin:12px 0}.hb{gap:10px}
 .hm-neo .hero,.hm-lime .hero{background:linear-gradient(145deg,rgba(255,255,255,.16),transparent 60%),var(--fe);color:var(--fi)}
@@ -506,8 +508,8 @@ html[data-ui="lime"] .hd,html[data-ui="mono"] .hd,html[data-ui="noir"] .hd{backg
 @media(max-width:760px){
  html nav.side{left:0;right:0;bottom:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-radius:20px 20px 0 0}
  #nv{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;overflow:visible}
- #nv button{min-width:0;min-height:54px;padding:6px 2px;font-size:11px;justify-content:center;border-radius:14px}
- #nv button span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+ #nv button{min-width:0;min-height:64px;padding:6px 2px;font-size:11px;justify-content:center;border-radius:14px}
+ #nv button span{max-width:100%;white-space:normal;line-height:1.15;overflow-wrap:anywhere;text-align:center}
  #nv button svg.ic{width:23px;height:23px}
  #fab{right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));width:54px;height:54px}
  #toast{bottom:calc(146px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100vw - 32px)}
@@ -922,7 +924,7 @@ let CANG=0,CDRAG=null,CTIMER=null,CVIEW='lista';
 const ccPC=()=>window.matchMedia('(min-width:900px)').matches;const CC_PASSO=40;
 function ccN(){return S.cards.length}
 function ccIdx(){const N=ccN();if(!N)return 0;return Math.min(N-1,Math.max(0,Math.round(-CANG/CC_PASSO)))}
-function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;st.classList.toggle('drag',!anim);const W=st.clientWidth||320,H=st.clientHeight||300;const cw=Math.max(130,Math.min(W*0.62,240)),ch=cw/1.6,R=Math.max(90,Math.min(W*0.6,260,(H/2-ch/2)/0.9)),cx=Math.min(cw/2+6,W-24-R-cw/2),cy=H/2,Rt=R+cw/2+16;st.style.setProperty('--cw',cw+'px');st.style.setProperty('--ch',ch+'px');
+function ccPaint(anim){const st=document.getElementById('ccArc');if(!st)return;st.classList.toggle('drag',!anim);const W=st.clientWidth||320,H=st.clientHeight||300;const cw=Math.max(130,Math.min(W*0.62,240)),ch=cw/1.6,R=Math.max(90,Math.min(W*0.6,260,(H/2-ch/2)/0.9)),cx=Math.min(cw/2+6,W-44-R-cw/2),cy=H/2,Rt=R+cw/2+16;st.style.setProperty('--cw',cw+'px');st.style.setProperty('--ch',ch+'px');
  st.querySelectorAll('.cc-card').forEach(b=>{const i=+b.dataset.cci,ang=(i*CC_PASSO+CANG)*Math.PI/180,x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang),ad=Math.abs(ang*180/Math.PI),vis=ad<=64,k=Math.min(ad/CC_PASSO,2);b.style.left=(x-cw/2)+'px';b.style.top=(y-ch/2)+'px';b.style.transform='scale('+(1-0.07*k)+')';b.style.opacity=vis?String(Math.max(0,1-ad/110)):'0';b.style.zIndex=String(100-Math.round(ad));b.style.pointerEvents=vis?'auto':'none'});
  st.querySelectorAll('.cc-tk').forEach((t,k)=>{const bb=(k-10)*8*Math.PI/180;t.style.left=(cx+Rt*Math.cos(bb)-2)+'px';t.style.top=(cy+Rt*Math.sin(bb)-2)+'px'});
  const go=st.querySelector('.cc-go');if(go){go.style.left=(cx+Rt-22)+'px';go.style.top=(cy-22)+'px'}
@@ -1126,6 +1128,8 @@ const VERS=[
  {v:'0.15',st:'Versão anterior',itens:['Excluir cartão pede confirmação; cartão com parcelamentos não pode ser excluído','Compra parcelada com 0 parcelas é recusada','Colar no editor de notas mantém negrito, itálico e links (com sanitização)','Restauração e desfazer transacionais','Limites para backups: 20 MB, texto e quantidade de registros','Criptografia: ativar, trocar e desativar senha de forma transacional','Service worker: pré-cache do leitor de PDF']},
  {v:'0.14',st:'Versão anterior',itens:['Sem registro detalhado de mudanças para esta versão.']}
 ];
+/* Cartão de uma versão na aba Versões. As 3 mais recentes ficam visíveis; as demais vão para "Ver mais". */
+function verCard(x){return `<div class="card"><div class="ch"><h2>Versão ${E(x.v)}</h2><span class="tag${x.v==VER?'':' w'}">${E(x.st)}</span></div><ul class="note" style="margin:0;padding-left:18px">${x.itens.map(i=>`<li>${E(i)}</li>`).join('')}</ul></div>`}
 const CRED=[
  {nome:'PDF.js 6.4.299',quem:'Mozilla',lic:'Licença Apache 2.0',arq:'vendor/pdfjs/LICENSE-pdfjs'},
  {nome:'Hanken Grotesk',quem:'Hanken Design Co.',lic:'SIL Open Font License 1.1',arq:'vendor/fonts/OFL-HankenGrotesk.txt'},
@@ -1134,7 +1138,7 @@ const CRED=[
 function sobre(){const t=SB.tab,abas=[['versoes','Versões'],['creditos','Créditos'],['dados','Dados e privacidade']];
  const botoes=`<div class="row" style="margin-bottom:14px">${abas.map(([k,l])=>`<button class="${t==k?'pri':'gh'}" aria-pressed="${t==k}" data-on-click="h402" data-p402_1="${k}">${l}</button>`).join('')}</div>`;
  let c='';
- if(t=='versoes')c=`<div class="card"><p class="note" style="margin:0 0 12px">Versão em execução neste aparelho: <b>${E(VER)}</b>. Novas versões só são instaladas quando você escolher "Atualizar agora".</p><button class="gh" id="btnUpd">Verificar atualização</button></div>`+(UPDN&&UPD.reg&&UPD.reg.waiting?pendCard():'')+VERS.map(x=>`<div class="card"><div class="ch"><h2>Versão ${E(x.v)}</h2><span class="tag${x.v==VER?'':' w'}">${E(x.st)}</span></div><ul class="note" style="margin:0;padding-left:18px">${x.itens.map(i=>`<li>${E(i)}</li>`).join('')}</ul></div>`).join('');
+ if(t=='versoes')c=`<div class="card"><p class="note" style="margin:0 0 12px">Versão em execução neste aparelho: <b>${E(VER)}</b>. Novas versões só são instaladas quando você escolher "Atualizar agora".</p><button class="gh" id="btnUpd">Verificar atualização</button></div>`+(UPDN&&UPD.reg&&UPD.reg.waiting?pendCard():'')+VERS.slice(0,3).map(verCard).join('')+(VERS.length>3?`<details class="ver-mais"><summary class="gh">Ver mais (${VERS.length-3})</summary>${VERS.slice(3).map(verCard).join('')}</details>`:'');
  else if(t=='creditos')c=`<div class="card"><div class="ch"><h2>Quem fez</h2></div><div style="padding:6px 0"><b>manage-u</b><div class="note" style="margin:2px 0 0">Projeto e direção</div></div><div style="padding:10px 0;border-top:1px solid var(--ln)"><b>Claude</b><div class="note" style="margin:2px 0 0">Anthropic · assistência no desenvolvimento e nos testes</div></div></div><div class="card"><div class="ch"><h2>Bibliotecas e fontes</h2></div><p class="note" style="margin:0 0 12px">Estes componentes vêm junto com o app. Nenhum deles é carregado de serviços externos.</p>${CRED.map(x=>`<div style="padding:10px 0;border-top:1px solid var(--ln)"><b>${E(x.nome)}</b><div class="note" style="margin:2px 0 4px">${E(x.quem)} · ${E(x.lic)}</div><a href="${E(x.arq)}" target="_blank" rel="noopener">Ver licença</a></div>`).join('')}</div>`;
  else c=sbDados();
  return botoes+c}
