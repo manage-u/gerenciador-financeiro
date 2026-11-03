@@ -507,16 +507,24 @@ html[data-ui="lime"] .hd,html[data-ui="mono"] .hd,html[data-ui="noir"] .hd{backg
 .dvr .fld{flex:none}
 .inv .note{margin:6px 0 0}
 @media(max-width:760px){
- html nav.side{left:0;right:0;bottom:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-radius:20px 20px 0 0}
- #nv{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;overflow:visible;align-items:end}
- #nv .nv-add{min-width:0;min-height:0;width:54px;height:54px;justify-self:center;align-self:center;padding:0;margin:-22px 0 0;border-radius:50%;justify-content:center;font-size:30px;line-height:1;font-weight:500;background:var(--fe);color:var(--fi);box-shadow:0 10px 24px -8px rgba(0,0,0,.5);border:0}
- #nv .nv-add:active{transform:scale(.96)}
+ html nav.side{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:8px 6px;border-radius:999px}
+ #nv{display:grid;grid-template-columns:1fr 66px 1fr;gap:0;overflow:visible;align-items:end}
+ #nv .nv-l,#nv .nv-r{display:grid;gap:2px;min-width:0}
+ #nv .nv-l{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #nv .nv-r{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #nv{position:relative}
+ #nv .nv-add{position:absolute;left:50%;top:-24px;transform:translateX(-50%);width:58px;height:58px;min-width:0;min-height:0;margin:0;padding:0;border:0;border-radius:50%;justify-content:center;font-size:30px;line-height:1;font-weight:500;background:var(--fe);color:var(--fi);box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
+ #nv .nv-add:active{transform:translateX(-50%) scale(.96)}
+ html[data-ui="noir"] #nv .nv-add{color:#0b0d10}
+ html[data-ui="noir"] #nv .nv-add:hover{color:#0b0d10}
+ html[data-ui="lime"] #nv .nv-add{background:var(--fe);color:#0b0b0b;box-shadow:0 0 0 4px #0b0d10,0 10px 24px -8px rgba(0,0,0,.5)}
+ #nv .nv-gap{display:block;min-width:0}
  #nv button{min-width:0;min-height:64px;padding:6px 2px;font-size:11px;justify-content:center;border-radius:14px}
- #nv button span{max-width:100%;white-space:normal;line-height:1.15;overflow-wrap:anywhere;text-align:center}
+ #nv button span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;text-align:center}
  #nv button svg.ic{width:23px;height:23px}
  #fab{display:none}
- #toast{bottom:calc(146px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100vw - 32px)}
- main{padding:12px 14px calc(150px + env(safe-area-inset-bottom,0px))}
+ #toast{bottom:calc(112px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100vw - 32px)}
+ main{padding:12px 14px calc(130px + env(safe-area-inset-bottom,0px))}
  .top{margin-bottom:6px;justify-content:flex-end}.top .crumb,.top .dt,.top .seg{display:none}
  h1{font-size:24px}.ph{margin-bottom:16px}
  :is(input:not([type=checkbox],[type=range],[type=color]),select,textarea){font-size:16px;min-height:44px}
@@ -1378,7 +1386,7 @@ const MQ=matchMedia('(max-width:760px)'),TABS=['geral','contas','cartoes','gasto
 const ico=id=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${NIC[id]}</svg>`;
 function navHtml(k){const b=id=>`<button class="${id==k?'on':''}" ${id==k?'aria-current="page"':''} aria-label="${PG[id][0]}" title="${PG[id][0]}" data-on-click="h127" data-p127_1="${E(id)}">${ico(id)}<span>${PG[id][0]}</span></button>`;
  if(!MQ.matches)return NG.map(([g,ids])=>`<div class="ng">${g}</div>`+ids.map(b).join('')).join('');
- const mais=!TABS.includes(k),ADD='<button class="nv-add" data-on-click="h0" aria-label="Lançar gasto rápido" title="Lançar gasto rápido (tecla N)">+</button>';return TABS.slice(0,2).map(b).join('')+ADD+TABS.slice(2).map(b).join('')+`<button class="${mais?'on':''}" aria-haspopup="dialog" data-on-click="h128"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg><span>${mais?PG[k][0]:'Mais'}</span></button>`}
+ const mais=!TABS.includes(k),GAP='<span class="nv-gap" aria-hidden="true"></span>',ADD='<button class="nv-add" data-on-click="h0" aria-label="Lançar gasto rápido" title="Lançar gasto rápido (tecla N)">+</button>';return '<div class="nv-l">'+TABS.slice(0,2).map(b).join('')+'</div>'+GAP+ADD+'<div class="nv-r">'+TABS.slice(2).map(b).join('')+`<button class="${mais?'on':''}" aria-haspopup="dialog" data-on-click="h128"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg><span>Mais</span></button></div>`}
 function maisSheet(){if($('#ms'))return fechaMais();const o=document.createElement('div');o.id='ms';o.className='ms';
  o.innerHTML=`<div class="mb" data-on-click="h129"></div><div class="mp" role="dialog" aria-modal="true" aria-label="Mais telas"><div class="mg"></div>${NG.map(([g,ids])=>{const L=ids.filter(id=>!TABS.includes(id));return L.length?`<div class="ng">${g}</div><div class="mgrid">${L.map(id=>`<button data-on-click="h130" data-p130_1="${E(id)}">${ico(id)}<span>${PG[id][0]}</span></button>`).join('')}</div>`:''}).join('')}</div>`;
  document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'))}
