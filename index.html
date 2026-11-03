@@ -56,8 +56,8 @@ html[data-ui] .card.cc-carrossel{background:linear-gradient(180deg,#1a1e2c,#1114
 }
 
 /* Cartões: leque em arco com trilha e botão circular (referência) */
-.cc-arc{position:relative;height:400px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 85% 50%,#1f2638 0,#131826 45%,#0c1019 100%);touch-action:none;cursor:grab;user-select:none;outline:none;margin-top:8px}
-@media(min-width:600px){.cc-arc{height:460px}}
+.cc-arc{position:relative;height:500px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 85% 50%,#1f2638 0,#131826 45%,#0c1019 100%);touch-action:none;cursor:grab;user-select:none;outline:none;margin-top:8px}
+@media(min-width:600px){.cc-arc{height:520px}}
 .cc-arc:focus-visible{box-shadow:0 0 0 3px var(--ac)}
 .cc-arc.drag{cursor:grabbing}
 .cc-arc.drag .cc-card{transition:none}
@@ -123,8 +123,6 @@ main:has(.cc-wrap) .cc-arc{height:auto;flex:1;min-height:0}
 .cc-card .cc-meta{font-size:11px}
 
 /* Cartões no celular: duas telas (lista de cartões -> detalhe) */
-.cc-ver{width:100%;margin-top:10px}
-.card.cc-carrossel .cc-ver{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}
 .cc-back{margin:0 0 12px;padding:8px 14px;min-height:40px}
 .cc-bigcard{position:relative;width:100%;aspect-ratio:1.6/1;max-height:200px;border-radius:22px;padding:18px 20px;color:#fff;background:var(--bg);box-shadow:0 18px 34px -14px rgba(0,0,0,.45);margin-bottom:14px;display:block}
 .cc-bigcard .cc-brand{display:block;font-weight:800;font-size:22px;line-height:1.2;overflow-wrap:anywhere}
@@ -979,7 +977,7 @@ function faturas(){
  const novo=`<details class="cc-novo-top"><summary>+ Adicionar</summary>${formNovo}</details>`;
  if(!ccPC()){
   if(CVIEW=='detalhe')return `<div class="cc-detpage" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}"><button class="gh cc-back" data-on-click="h604">‹ Cartões</button><div class="cc-bigcard" style="--bg:${CC_COR[idx%CC_COR.length]}"><span class="cc-brand">${E(c.nome)}</span><span class="cc-num-big">•••• •••• •••• ${["4821","0937","5360","2714","8806"][idx%5]}</span><span class="cc-meta">Fecha ${c.fecha} · vence ${c.venc}</span></div>${ccDetHTML(c)}${compra}</div>`;
-  return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><div class="cc-top"><h2>Seus cartões</h2><div class="cc-acts">${novo}<button class="cc-open-top" data-on-click="h605">Abrir cartão ›</button></div></div>${arc}${nav}<button class="pri cc-ver" data-on-click="h605">Abrir cartão</button></div></aside></div>`;
+  return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><div class="cc-top"><h2>Seus cartões</h2><div class="cc-acts">${novo}<button class="cc-open-top" data-on-click="h605">Abrir cartão ›</button></div></div>${arc}${nav}</div></aside></div>`;
  }
  return `<div class="cc-wrap"><aside class="cc-side"><div class="card cc-carrossel"><div class="cc-top"><h2>Seus cartões</h2>${novo}</div>${arc}${nav}</div></aside><div class="cc-main"><div id="ccDet" style="--ca:${CC_SOLID[idx%CC_SOLID.length]}">${ccDetHTML(c)}</div>${compra}</div></div>`;
 }
