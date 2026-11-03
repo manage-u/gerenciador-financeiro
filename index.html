@@ -526,9 +526,8 @@ html[data-ui="lime"] .hd,html[data-ui="mono"] .hd,html[data-ui="noir"] .hd{backg
 @media(max-width:760px){
  html nav.side{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:8px 10px;border-radius:28px}
  #nv{display:grid;grid-template-columns:1fr 66px 1fr;gap:0;overflow:visible;align-items:end}
- #nv .nv-l,#nv .nv-r{display:grid;gap:2px;min-width:0}
- #nv .nv-l{grid-template-columns:repeat(3,minmax(0,1fr))}
- #nv .nv-r{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #nv .nv-l,#nv .nv-r{display:flex;justify-content:center;gap:2px;min-width:0}
+ #nv .nv-l>*,#nv .nv-r>*{flex:1 1 0;max-width:84px;min-width:0}
  #nv{position:relative}
  #nv .nv-add{position:absolute;left:50%;top:-24px;transform:translateX(-50%);width:58px;height:58px;min-width:0;min-height:0;margin:0;padding:0;border:0;border-radius:50%;justify-content:center;font-size:30px;line-height:1;font-weight:500;background:var(--fe);color:var(--fi);box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
  #nv .nv-add:active{transform:translateX(-50%) scale(.96)}
