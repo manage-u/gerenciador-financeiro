@@ -523,6 +523,12 @@ html[data-ui="lime"] .hd,html[data-ui="mono"] .hd,html[data-ui="noir"] .hd{backg
  #nv button span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px;text-align:center}
  #nv button svg.ic{width:23px;height:23px}
  #fab{display:none}
+ .wr aside.card{order:2}
+ .fbar{display:none}
+ body.typing nav.side{display:none}
+ body.typing .fbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:6;gap:4px;justify-content:space-around;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);box-shadow:0 -8px 24px -12px rgba(0,0,0,.35)}
+ .fbar button{flex:1 1 0;min-width:0;min-height:44px;padding:0;border:0;border-radius:12px;background:var(--cd,var(--bg));color:var(--ink);font-size:16px;box-shadow:var(--raise-s)}
+ body.typing main{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
  #toast{bottom:calc(112px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100vw - 32px)}
  main{padding:12px 14px calc(130px + env(safe-area-inset-bottom,0px))}
  .top{margin-bottom:6px;justify-content:flex-end}.top .crumb,.top .dt,.top .seg{display:none}
@@ -1445,7 +1451,7 @@ function escrever(){if(!nOf()){const f=S.notas.filter(x=>!!x.del==!!NT.del).sort
  const al={l:'M4 6h16M4 12h10M4 18h14',c:'M4 6h16M7 12h10M5 18h14',r:'M4 6h16M10 12h10M6 18h14',j:'M4 6h16M4 12h16M4 18h16'},sv=d=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
  const rb=(c,l,h)=>`<button aria-label="${l}" title="${l}" data-on-click="h138" data-p138_0="${E(c)}">${h}</button>`;
  return `<div class="wr">${list}<section><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px"><span class="mu" style="font-size:13px">${n.del?'Na lixeira':'Salvo automaticamente'}${n.u?' · '+new Date(n.u).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</span><div class="row">${n.del?`<button class="gh" data-on-click="h139" data-p139_1="${E(n.id)}">Restaurar</button><button class="gh" data-on-click="h140" data-p140_1="${E(n.id)}">Apagar de vez</button>`:`<button class="gh" data-on-click="h141" data-p141_1="${E(n.id)}">Mover para a lixeira</button>`}</div></div>
- <div id="pp" class="paper pp-${n.pp} f-${n.f}" style="${nStyle(n)}"><input id="nt" class="ntitle" placeholder="Título" aria-label="Título da nota" value="${E(n.t)}" data-on-input="h142" data-on-focusout="h143" ${n.del?'disabled':''}><div id="ed" class="nted" contenteditable="${n.del?'false':'true'}" role="textbox" aria-multiline="true" aria-label="Texto da nota" data-on-input="h144" data-on-focusout="h145" data-on-paste="h146" data-on-drop="h147">${cleanHtml(n.h)}</div><div class="nfoot" id="wc">${nWc(n.h)}</div></div></section>
+ <div id="pp" class="paper pp-${n.pp} f-${n.f}" style="${nStyle(n)}"><input id="nt" class="ntitle" placeholder="Título" aria-label="Título da nota" value="${E(n.t)}" data-on-input="h142" data-on-focusout="h143" ${n.del?'disabled':''}><div id="ed" class="nted" contenteditable="${n.del?'false':'true'}" role="textbox" aria-multiline="true" aria-label="Texto da nota" data-on-input="h144" data-on-focusout="h145" data-on-paste="h146" data-on-drop="h147">${cleanHtml(n.h)}</div><div class="nfoot" id="wc">${nWc(n.h)}</div></div><div id="fbar" class="fbar" role="toolbar" aria-label="Formatação" data-on-mousedown="h148">${rb("nCmd('bold')",'Negrito','<b>B</b>')}${rb("nCmd('italic')",'Itálico','<i>I</i>')}${rb("nCmd('underline')",'Sublinhado','<u>U</u>')}${rb("nCmd('strikeThrough')",'Riscado','<s>S</s>')}${rb("nCmd('insertUnorderedList')",'Lista','<svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>')}${rb("nCmd('formatBlock','blockquote')",'Citação','<b>“</b>')}${rb('nLink()','Link','<svg class="ic" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>')}</div></section>
  <aside class="card npanel" data-on-mousedown="h148"><h2>Estilo do papel</h2><div class="pps">${Object.entries(PAP).map(([k,l])=>`<button class="ppb pp-${k} ${n.pp==k?'on':''}" aria-label="Papel ${l}" title="${l}" aria-pressed="${n.pp==k}" data-on-click="h149" data-p149_1="${E(k)}">Aa</button>`).join('')}</div>
  <h2>Fonte</h2><div class="fgrid">${Object.entries(FN).map(([k,l])=>`<button class="fb f-${k} ${n.f==k?'on':''}" aria-pressed="${n.f==k}" data-on-click="h150" data-p150_1="${E(k)}"><span>Aa</span><small>${l}</small></button>`).join('')}</div><p class="note" style="margin-top:8px">Com texto selecionado, a fonte vale só para a seleção. Sem seleção, muda a nota toda.</p>
  <h2>Formatar</h2><div class="rb">${rb("nCmd('bold')",'Negrito','<b>B</b>')}${rb("nCmd('italic')",'Itálico','<i>I</i>')}${rb("nCmd('underline')",'Sublinhado','<u>U</u>')}${rb("nCmd('strikeThrough')",'Riscado','<s>S</s>')}${rb("nCmd('insertUnorderedList')",'Lista','<svg class="ic" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>')}${rb("nCmd('insertOrderedList')",'Lista numerada','<svg class="ic" viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10M4 5l1.5-1v5M4 14h3l-3 4h3"/></svg>')}${rb("nCmd('formatBlock','blockquote')",'Citação','<b>“</b>')}${rb('nLink()','Link','<svg class="ic" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>')}</div>
@@ -1462,6 +1468,7 @@ addEventListener('storage',async e=>{if(e.key!==K||!e.newValue)return;if(PEND!==
 MQ.addEventListener('change',()=>{fechaMais();render()});
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e;if(location.hash.slice(1)=='config')render()});
 addEventListener('appinstalled',()=>{DIP=null;toast('App instalado.');if(location.hash.slice(1)=='config')render()});
+addEventListener('focusin',e=>{if(e.target.closest&&e.target.closest('#ed,#nt'))document.body.classList.add('typing')});addEventListener('focusout',()=>setTimeout(()=>{const a=document.activeElement;if(!(a&&a.closest&&a.closest('#ed,#nt')))document.body.classList.remove('typing')},150));
 addEventListener('keydown',e=>{if(e.key=='Escape')fechaMais();if(e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||e.target.isContentEditable)return;if(e.key=='n'||e.key=='N'){e.preventDefault();qa()}});
 /* ===== atualização com escolha do usuário (v0.17) =====
    A nova versão fica esperando. O app mostra o aviso; só recarrega quando o usuário clica em "Atualizar agora". */
@@ -1657,7 +1664,7 @@ h134:(el,ev)=>{nGo(1)},
 h135:(el,ev)=>{nNew()},
 h136:(el,ev)=>{NT.q=el.value;$('#nl').innerHTML=nList()},
 h137:(el,ev)=>{nNew()},
-h138:(el,ev)=>{(+el.dataset.p138_0)},
+h138:(el,ev)=>{const c=el.dataset.p138_0||'';if(c==='nLink()')return nLink();const m=/^nCmd\('([A-Za-z]+)'(?:,'([A-Za-z0-9]+)')?\)$/.exec(c);if(m)nCmd(m[1],m[2])},
 h139:(el,ev)=>{nDel(el.dataset.p139_1,0)},
 h140:(el,ev)=>{nPurge(el.dataset.p140_1)},
 h141:(el,ev)=>{nDel(el.dataset.p141_1,1)},
