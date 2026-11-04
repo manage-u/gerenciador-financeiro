@@ -149,6 +149,11 @@ html[data-ui="aurora"] .bc i{background:linear-gradient(180deg,#c4b5fd,#6d4aff);
 .bv-foco{border:0;padding:0;margin:0 0 14px;display:grid;gap:8px}
 .bv-foco legend{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin:0 0 8px;padding:0}
 .bv-foco legend small{font-weight:400;letter-spacing:0;text-transform:none}
+/* Seu foco (Início): blocos de mesmo tamanho e cor neutra */
+.foco-ini .stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:0}
+.foco-ini .stats .st:first-child{background:var(--bg);color:var(--ink);box-shadow:var(--raise);grid-column:auto}
+.foco-ini .stats .st:first-child :is(label,small){color:var(--mu);opacity:1}
+.foco-ini .stats .st:first-child :is(b,input,.good,.bad,.mu){color:var(--ink)}
 </style>
 <script>try{var K0='gf-azim-v1',o=JSON.parse(localStorage.getItem(K0)||'{}'),h=document.documentElement,c=localStorage.getItem(K0+'-css');if(c)h.style.cssText=c;if(o.enc)h.classList.add('locked');h.dataset.ui=o.ui||'neo';h.dataset.theme=o.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'escuro':'hibrido');if(o.aj){if(o.aj.dest===0)h.classList.add('nodest');if(o.aj.mov===0)h.classList.add('nomov')}}catch(e){}</script>
 <style>
@@ -932,9 +937,18 @@ function donut(map){const e=Object.entries(map).sort((a,b)=>b[1]-a[1]),t=e.reduc
 function tiles(map){const e=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6),t=e.reduce((a,x)=>a+x[1],0);if(!t)return '<div class="empty">Nenhum gasto registrado neste período.</div>';
  return `<div class="tls">${e.map(([c,v],i)=>`<div class="tl ${i==0?'big':''}" style="flex:${Math.max(.6,v/t*6)} 1 ${i==0?'100%':'90px'};--tc:${cc(c)}"><small>${E(c)}</small><b>${Math.round(v/t*100)}%</b><em>${R0(v)}</em></div>`).join('')}</div>`}
 function boasVindas(){return `<section class="card boas" aria-labelledby="bv-t"><p class="bv-kick">Meu caixa</p><h2 id="bv-t" class="bv-h">Bem-vindo</h2><p class="note bv-p">Controle o dinheiro do mês sem planilha. Três coisas para começar:</p><ol class="bv-l"><li><b>Lance um gasto em segundos</b><span>Toque no + para registrar algo agora.</span></li><li><b>Cadastre contas e cartões uma vez</b><span>O app avisa os vencimentos e mostra o que já foi pago.</span></li><li><b>Seus dados ficam neste aparelho</b><span>Faça backup em Seus dados para não perder nada.</span></li></ol><label class="fld bv-nome">Como posso te chamar? <small>(opcional)</small><input id="bvn" value="${E(S.meuNome||'')}" placeholder="Seu primeiro nome" maxlength="40"></label><fieldset class="bv-foco"><legend>O que você quer controlar? <small>(opcional, pode mudar depois)</small></legend>${FOCOS.map(([f,l])=>`<label class="chk"><input type="checkbox" name="foco" value="${f}" ${S.foco.includes(f)?'checked':''}> ${l}</label>`).join('')}</fieldset><div class="row bv-acts"><button class="pri" data-on-click="h160">Começar</button></div></section>`}
+function inicioFoco(){
+ if(!S.foco||!S.foco.length)return '';
+ const I=[];
+ if(S.foco.includes('cartoes'))I.push(['Cartões',S.cards.length,S.cards.length==1?'cadastrado':'cadastrados']);
+ if(S.foco.includes('planejar')){const sd=S.debts.reduce((x,d)=>x+(+d.saldo||0),0),jm=S.debts.reduce((x,d)=>x+(+d.saldo||0)*(+d.taxa||0)/100,0);I.push(['Dívidas',R0(sd),jm>=1?'juros de '+R0(jm)+' por mês':'sem juros mensais calculados']);}
+ if(S.foco.includes('invest')){const rm=S.guardado*S.rend/1200;I.push(['Reserva rendendo',R0(rm),'por mês, estimado a '+S.rend+'% ao ano']);}
+ if(!I.length)return '';
+ return `<section class="card foco-ini" aria-label="Seu foco"><h2>Seu foco</h2><div class="stats">${I.map(([l,v,n])=>`<div class="st"><label>${l}</label><b>${v}</b><small>${n}</small></div>`).join('')}</div></section>`;
+}
 function geral(){if(!S.boas)return boasVindas();const gm=S.tx.filter(t=>mk(t.data)==mk(T)),tot=gm.reduce((a,t)=>a+t.valor,0),o30=opens(dPlus(30)),t30=o30.reduce((a,o)=>a+o.b.valor,0),u=S.ui||'neo',D=evoData(6),cu=D[D.length-1],pat=S.conta+S.guardado,h=new Date().getHours(),sd=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite',line=u=='mono'||u=='noir',map=sumBy(gm),hj=hoje(),
  dias=d=>{const n=Math.round((P(d)-P(T))/864e5);return n<0?'atrasada':n==0?'hoje':n==1?'amanhã':'em '+n+' dias'};
- return alertas()+`<section class="hm hm-${u=='aurora'?'neo':u}">
+ return inicioFoco()+alertas()+`<section class="hm hm-${u=='aurora'?'neo':u}">
  <div class="hero card" style="grid-area:hero"><small>${sd} · patrimônio total</small><div class="big">${R(pat)}</div><div class="hj">Hoje você pode gastar <b>${R0(hj.dia)}</b><small>${hj.livre>0?R0(hj.livre)+' livres até o fim do mês, já descontadas as contas que vencem':'o saldo não cobre as contas que vencem este mês'}</small></div>
   <div class="sv2"><label class="sv">Em conta<input type="number" step="0.01" value="${S.conta}" data-on-change="h11" aria-label="Saldo em conta"></label><label class="sv">Guardado<input type="number" step="0.01" value="${S.guardado}" data-on-change="h12" aria-label="Valor guardado"></label></div>
   <p class="hn">Reserva rendendo ${S.rend}% ao ano · toque nos valores para ajustar</p>
